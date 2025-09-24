@@ -1,16 +1,11 @@
 <!DOCTYPE html>
-<html lang="pl" data-theme="dark-neon">
+<html lang="pl">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>dreiji — linki</title>
   <meta name="description" content="Wszystkie moje linki w jednym miejscu." />
-  <meta property="og:title" content="dreiji — linki" />
-  <meta property="og:description" content="Wszystkie moje linki w jednym miejscu." />
-  <meta property="og:type" content="website" />
-  <meta property="og:image" content="avatar.png" />
-  <meta name="color-scheme" content="light dark" />
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 128 128'%3E%3Crect width='128' height='128' rx='24' fill='%2300ffc6'/%3E%3Ctext x='50%25' y='54%25' dominant-baseline='middle' text-anchor='middle' font-family='Arial' font-size='72' fill='%23001310'%3ED%3C/text%3E%3C/svg%3E" />
+  <link rel="icon" href="avatar.png" />
   <style>
     :root {
       --radius: 16px;
@@ -19,218 +14,90 @@
       --font: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial, sans-serif;
       --elev: 0 8px 24px rgba(0,0,0,.18);
       --speed: .18s;
-    }
-    /* Motywy (klikane poniżej) */
-    html[data-theme="dark-neon"]{
-      --bg: #0b0f13;
-      --bg2:#0e141b;
-      --fg: #e7f7ff;
-      --muted:#9fb2c2;
-      --card: rgba(255,255,255,.06);
+
+      /* Stały czarno-czerwony motyw */
+      --bg: #0a0a0a;
+      --bg2:#141414;
+      --fg: #f5f5f5;
+      --muted:#999;
+      --card: rgba(255,255,255,.04);
       --stroke: rgba(255,255,255,.12);
-      --accent:#00ffc6;
-      --accent-2:#36b3ff;
-      --glow: 0 0 28px rgba(0,255,198,.35);
-    }
-    html[data-theme="minimal-light"]{
-      --bg: #f6f7fb;
-      --bg2:#ffffff;
-      --fg: #0b1020;
-      --muted:#5c6370;
-      --card: #ffffff;
-      --stroke: rgba(0,0,0,.06);
-      --accent:#0f62fe;
-      --accent-2:#8a3ffc;
-      --glow: 0 0 0 transparent;
-    }
-    html[data-theme="pastel"]{
-      --bg:#f9f5ff;
-      --bg2:#fff;
-      --fg:#2b2436;
-      --muted:#6b6177;
-      --card:#fff;
-      --stroke:rgba(43,36,54,.08);
-      --accent:#7c3aed;
-      --accent-2:#22d3ee;
-      --glow: 0 0 24px rgba(124,58,237,.22);
-    }
-    html[data-theme="glass-dark"]{
-      --bg: radial-gradient(1200px 800px at 10% 10%, #0f1220, #07080e);
-      --bg2: transparent;
-      --fg:#e9edf5;
-      --muted:#a7b0c0;
-      --card: rgba(255,255,255,.06);
-      --stroke: rgba(255,255,255,.10);
-      --accent:#9dff79;
-      --accent-2:#6bd2ff;
-      --glow: 0 10px 30px rgba(157,255,121,.25);
+      --accent:#ff1a1a;
+      --accent-2:#ff3c3c;
+      --glow: 0 0 24px rgba(255,26,26,.4);
     }
 
-    /* Reset + layout */
     *{box-sizing:border-box}
     body{
-      margin:0; font: 16px/1.5 var(--font);
-      color:var(--fg);
-      background: var(--bg);
-      min-height:100svh; display:grid; place-items:center;
+      margin:0; font:16px/1.5 var(--font);
+      color:var(--fg); background:var(--bg);
+      min-height:100vh; display:grid; place-items:center;
     }
-    .wrap{
-      width:var(--w);
-      padding: 28px 16px 64px;
-    }
-    .card{
-      background: var(--card); border:1px solid var(--stroke);
-      border-radius: var(--radius); box-shadow: var(--elev);
-      backdrop-filter: blur(8px);
-    }
+    .wrap{width:var(--w); padding:28px 16px 64px;}
+
     header.profile{
       display:flex; gap:18px; align-items:center; padding:18px;
       background: var(--bg2); border:1px solid var(--stroke);
       border-radius: var(--radius); margin-bottom:16px;
     }
-    .pfp{
-      width:88px; height:88px; border-radius:50%; object-fit:cover;
-      border:2px solid color-mix(in oklab, var(--accent) 60%, transparent);
-      box-shadow: var(--glow);
-      background:#222;
-    }
+    .pfp{width:88px; height:88px; border-radius:50%; object-fit:cover;
+      border:2px solid var(--accent); box-shadow: var(--glow);}
     .meta h1{font-size: clamp(20px, 3vw, 28px); margin:0}
     .meta p{margin:4px 0 0; color:var(--muted)}
     .badges{display:flex; flex-wrap:wrap; gap:8px; margin-top:8px}
-    .badge{
-      font-size:12px; padding:4px 8px; border-radius:999px;
-      border:1px solid var(--stroke); background: color-mix(in oklab, var(--card) 60%, transparent);
-    }
+    .badge{font-size:12px; padding:4px 8px; border-radius:999px;
+      border:1px solid var(--stroke); background: var(--card);}
 
-    /* Lista linków */
     .links{display:grid; gap:12px; margin-top:18px}
     .link{
-      position:relative; display:flex; align-items:center; justify-content:space-between;
-      padding: var(--pad) calc(var(--pad) + 6px);
-      border-radius: calc(var(--radius) - 4px);
+      display:flex; align-items:center; justify-content:space-between;
+      padding: var(--pad); border-radius: calc(var(--radius) - 4px);
       border:1px solid var(--stroke); text-decoration:none; color:inherit;
-      background: linear-gradient(180deg, color-mix(in oklab, var(--card) 88%, transparent), color-mix(in oklab, var(--card) 60%, transparent));
-      transition: transform var(--speed) ease, border-color var(--speed) ease, background var(--speed) ease;
-      will-change: transform;
+      background: var(--card); transition: transform var(--speed);
     }
-    .link:hover{ transform: translateY(-1px); border-color: color-mix(in oklab, var(--accent) 30%, var(--stroke)); }
-    .link:active{ transform: translateY(0); }
-    .link .title{font-weight:700; letter-spacing:.2px}
+    .link:hover{ transform: translateY(-1px); border-color: var(--accent);}
+    .link .title{font-weight:700}
     .link .desc{font-size:13px; color:var(--muted)}
-    .link .right{display:flex; align-items:center; gap:10px}
-    .chip{
-      font-size:12px; padding:4px 8px; border-radius:10px;
-      border:1px solid var(--stroke);
-      background: color-mix(in oklab, var(--accent) 12%, transparent);
-      color: color-mix(in oklab, var(--fg) 92%, var(--accent));
-    }
-    .icon{
-      width:22px; height:22px; border-radius:6px; display:grid; place-items:center;
-      border:1px solid var(--stroke);
-      background: color-mix(in oklab, var(--accent-2) 22%, transparent);
-      font-weight:700; font-size:12px;
-      box-shadow: var(--glow);
-    }
-
-    /* Stopka + przełącznik motywu */
-    .bar{
-      margin-top:18px; display:flex; gap:8px; flex-wrap:wrap; align-items:center;
-    }
-    .theme{
-      appearance:none; border:1px solid var(--stroke); background:var(--card);
-      padding:8px 10px; border-radius:10px; color:var(--fg); cursor:pointer;
-    }
-    .mute{color:var(--muted); font-size:13px}
-    .grid-2{display:grid; gap:12px}
-    @media (min-width:700px){ .grid-2{grid-template-columns: 1fr 1fr} }
+    .chip{font-size:12px; padding:4px 8px; border-radius:10px;
+      border:1px solid var(--stroke); background: rgba(255,0,0,.1); color: var(--accent);}
+    .icon{width:22px; height:22px; border-radius:6px; display:grid; place-items:center;
+      border:1px solid var(--stroke); background: rgba(255,0,0,.2); font-weight:700; font-size:12px;
+      box-shadow: var(--glow);}
   </style>
 </head>
 <body>
   <main class="wrap">
     <header class="profile">
-      <img class="pfp" id="pfp" src="avatar.png" alt="avatar" />
+      <img class="pfp" src="avatar.png" alt="avatar" />
       <div class="meta">
-        <h1 id="name">dreiji</h1>
-        <p id="bio">moderuję, kodzę, czytam za dużo i śpię za mało</p>
-        <div class="badges" id="badges"></div>
+        <h1>dreiji</h1>
+        <p>moderuję, kodzę, czytam za dużo i śpię za mało</p>
+        <div class="badges">
+          <span class="badge">Twitch mod</span>
+          <span class="badge">dev</span>
+          <span class="badge">czytelnik 7/10</span>
+        </div>
       </div>
     </header>
 
-    <section class="links grid-2" id="links"></section>
-
-    <div class="bar">
-      <select id="theme" class="theme" title="Motyw">
-        <option value="dark-neon">Dark neon</option>
-        <option value="glass-dark">Glass dark</option>
-        <option value="minimal-light">Minimal light</option>
-        <option value="pastel">Pastel</option>
-      </select>
-      <span class="mute">Twoja strona. Zero cudzych logotypów, zero limitów.</span>
-    </div>
+    <section class="links">
+      <a class="link" href="https://instagram.com/your" target="_blank">
+        <div><div class="title">Instagram</div><div class="desc">zdjęcia i story</div></div>
+        <div class="right"><span class="chip">social</span><span class="icon">IG</span></div>
+      </a>
+      <a class="link" href="https://youtube.com/@your" target="_blank">
+        <div><div class="title">YouTube</div><div class="desc">filmy i klipy</div></div>
+        <div class="right"><span class="chip">video</span><span class="icon">YT</span></div>
+      </a>
+      <a class="link" href="https://twitch.tv/your" target="_blank">
+        <div><div class="title">Twitch</div><div class="desc">live czasem</div></div>
+        <div class="right"><span class="chip">live</span><span class="icon">TW</span></div>
+      </a>
+      <a class="link" href="mailto:kontakt@dreiji.pl">
+        <div><div class="title">Mail</div><div class="desc">współpraca</div></div>
+        <div class="right"><span class="chip">kontakt</span><span class="icon">✉</span></div>
+      </a>
+    </section>
   </main>
-
-  <script>
-    // KONFIG: podmień to pod siebie. Serio. Tylko ten blok.
-    const CONFIG = {
-      name: "dreiji",
-      bio: "moderuję, kodzę, czytam za dużo i śpię za mało",
-      avatar: "avatar.png", // wrzuć swój plik obok index.html
-      badges: ["Twitch mod", "dev", "czytelnik 7/10"],
-      // Każdy obiekt = kafelek. icon: krótkie 2–3 litery albo emoji.
-      links: [
-        { title: "Instagram", url: "https://instagram.com/your", icon: "IG", note: "zdjęcia i story", tag: "social" },
-        { title: "YouTube", url: "https://youtube.com/@your", icon: "YT", note: "filmy i klipy", tag: "video" },
-        { title: "Twitch", url: "https://twitch.tv/your", icon: "TW", note: "live czasem", tag: "live" },
-        { title: "X / Twitter", url: "https://x.com/your", icon: "X", note: "czasem coś palnę", tag: "posty" },
-        { title: "Mail", url: "mailto:kontakt@dreiji.pl", icon: "✉", note: "współpraca", tag: "kontakt" },
-        { title: "GitHub", url: "https://github.com/your", icon: "GH", note: "kody i zabawki", tag: "dev" },
-      ],
-      theme: "dark-neon" // startowy: dark-neon | glass-dark | minimal-light | pastel
-    };
-
-    // Render profilu
-    document.getElementById("name").textContent = CONFIG.name;
-    document.getElementById("bio").textContent = CONFIG.bio;
-    if (CONFIG.avatar) document.getElementById("pfp").src = CONFIG.avatar;
-    const badges = document.getElementById("badges");
-    CONFIG.badges.forEach(b => {
-      const s = document.createElement("span");
-      s.className = "badge"; s.textContent = b; badges.appendChild(s);
-    });
-
-    // Render linków
-    const grid = document.getElementById("links");
-    CONFIG.links.forEach(item => {
-      const a = document.createElement("a");
-      a.className = "link card";
-      a.href = item.url; a.target = "_blank"; a.rel = "noopener";
-      a.innerHTML = `
-        <div>
-          <div class="title">${item.title}</div>
-          ${item.note ? `<div class="desc">${item.note}</div>` : ``}
-        </div>
-        <div class="right">
-          ${item.tag ? `<span class="chip">${item.tag}</span>` : ``}
-          <span class="icon">${item.icon ?? "↗"}</span>
-        </div>`;
-      grid.appendChild(a);
-    });
-
-    // Motywy
-    const select = document.getElementById("theme");
-    const saved = localStorage.getItem("theme");
-    const initial = saved || CONFIG.theme || "dark-neon";
-    document.documentElement.setAttribute("data-theme", initial);
-    select.value = initial;
-    select.addEventListener("change", () => {
-      const t = select.value;
-      document.documentElement.setAttribute("data-theme", t);
-      localStorage.setItem("theme", t);
-    });
-
-    // Mały upgrade: jeśli ktoś wejdzie przez /?theme=pastel itp.
-    const q = new URLSearchParams(location.search).get("theme");
-    if (q) { select.value = q; select.dispatchEvent(new Event("change")); }
-  </script>
 </body>
 </html>
