@@ -1,40 +1,47 @@
 <!doctype html><html lang="pl"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><title>?</title><meta name="robots" content="noindex,nofollow"/><style>:root{--bg:#0a0a0a;--fg:#f3f3f3;--muted:#9a9a9a;--card:rgba(0,0,0,.55);--accent:#ff1a1a;--stroke:rgba(255,255,255,.08);--glow:0 0 24px rgba(255,26,26,.25);--font:ui-sans-serif,system-ui,-apple-system,Segoe UI,Inter,Roboto,Arial,sans-serif}*{box-sizing:border-box}html,body{height:100%}body{margin:0;font:16px/1.5 var(--font);color:var(--fg);background:var(--bg);display:grid;place-items:center}main.card{width:min(880px,92vw);padding:28px;border-radius:12px;background:var(--card);border:1px solid var(--stroke);box-shadow:0 12px 40px rgba(0,0,0,.6)}h1{margin:0 0 8px;font-size:20px}p{margin:0 0 16px;color:var(--muted)}.gate{display:flex;gap:10px;margin-top:14px}.pin{flex:1;padding:12px 14px;border-radius:10px;border:1px solid var(--stroke);background:transparent;color:var(--fg);outline:none;font-size:16px}.btn{padding:12px 14px;border-radius:10px;border:1px solid var(--stroke);background:linear-gradient(180deg, rgba(255,26,26,.12), rgba(255,26,26,.06));color:var(--fg);cursor:pointer}.btn:hover{box-shadow:var(--glow);border-color:var(--accent);transform:translateY(-1px)}.msg{margin-top:10px;color:#ffb3b3;font-size:14px;min-height:18px}</style></head><body><main class="card" role="main" aria-labelledby="t"><h1 id="t">Strefa prywatna</h1><p>Wpisz hasło, żeby przejść dalej.</p><div class="gate"><input id="p" class="pin" type="password" inputmode="text" placeholder="Wpisz hasło" autocomplete="off" aria-label="Hasło"/><button id="b" class="btn" aria-label="Wejdź">Wejdź</button></div><div id="m" class="msg"></div><script>
-(()=>'use strict';const d=document, _=s=>d.getElementById(s);
-const _S=["aVN0X3ZsdF9sb2Nr","bHYxMjM=","V3Bq","T0pDT0Q=",
-"b2Z1c2th","b2Z1","c2FsdF9iNjQ=",
-"oZ7bzZfZuBNJnr6HsHcdAg==","q+7qOFzi73M1vNSN","Nufafun4ARmYwiyJUasx/8OjIfumGPf5i4R8O4G5Z97hSaIxd8/7eJYZet4wujhBxs1cN03nkgOazzDueixarVWy9Kmm9WSAXoiBdg==",
-"MjAwMDAw","NQ==","MzAwMDA=","Wpisz haslo.","Zle haslo.","Zbyt wiele prob, odczekaj.","salt","iv","ct","vlt_lock"];
-const z=i=>{try{return atob(_S[i])}catch(e){return ''}};
-const e=new TextEncoder(),D=new TextDecoder();
-const b64d=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
-const G=(_id)=>_( _id );
-const ITER=parseInt(z(10)), MAX=parseInt(z(11)), LOCK=parseInt(z(12));
-const SALT_B64=z(7), IV_B64=z(8), CT_B64=z(9);
-const p=G("p"), b=G("b"), m=G("m");
-function sset(k,v){try{sessionStorage.setItem(k,v)}catch{}}
-function sget(k){try{return sessionStorage.getItem(k)}catch{return null}}
-function sdel(k){try{sessionStorage.removeItem(k)}catch{}}
-let until=Number(sget(z(0))||0); if(until>Date.now()) m.textContent=`(${Math.ceil((until-Date.now())/1e3)}s)`; else {sdel(z(0)); until=0;}
-async function k(pass){
-  const k0=await crypto.subtle.importKey("raw",e.encode(pass),{name:"PBKDF2"},false,["deriveKey"]);
-  return crypto.subtle.deriveKey({name:"PBKDF2",hash:"SHA-256",salt:b64d(SALT_B64),iterations:ITER},k0,{name:"AES-GCM",length:256},false,["decrypt"]);
-}
-async function o(pass){
-  const key=await k(pass);
-  try{
-    const buf=await crypto.subtle.decrypt({name:"AES-GCM",iv:b64d(IV_B64)},key,b64d(CT_B64));
-    return D.decode(buf);
-  }catch(e){return null}
-}
-let f=0;
-async function go(){
-  const now=Date.now(); if(now<until){m.textContent=`(${Math.ceil((until-now)/1e3)}s)`;return;}
-  const v=(p.value||'').trim(); if(!v){m.textContent=z(13);return;}
-  const u=await o(v);
-  if(u){ m.textContent=''; sdel(z(0)); location.href=u; return; }
-  f++; p.value=''; p.focus();
-  if(f>=MAX){ until=Date.now()+LOCK; sset(z(0),String(until)); m.textContent=z(15); f=0; } else { m.textContent=z(14); }
-}
-b.addEventListener("click",go); p.addEventListener("keyup",e=>{if(e.key==="Enter")go()});
+(() => {
+  'use strict';
+  const d = document, p = d.getElementById('p'), btn = d.getElementById('b'), msg = d.getElementById('m');
+  const ITER = 200000, SALT_B64 = "oZ7bzZfZuBNJnr6HsHcdAg==", IV_B64 = "q+7qOFzi73M1vNSN",
+        CT_B64 = "Nufafun4ARmYwiyJUasx/8OjIfumGPf5i4R8O4G5Z97hSaIxd8/7eJYZet4wujhBxs1cN03nkgOazzDueixarVWy9Kmm9WSAXoiBdg==";
+  const MAX = 5, LOCK_MS = 30000;
+  let fails = 0;
+  const enc = new TextEncoder(), dec = new TextDecoder();
+  const b64dec = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
+  function ss(k, v) { try { sessionStorage.setItem(k, v) } catch (e) { } }
+  function gs(k) { try { return sessionStorage.getItem(k) } catch (e) { return null } }
+  function rm(k) { try { sessionStorage.removeItem(k) } catch (e) { } }
+  let until = Number(gs("vlt_lock") || 0);
+  if (until > Date.now()) msg.textContent = `(${Math.ceil((until - Date.now()) / 1e3)}s)`; else { rm("vlt_lock"); until = 0; }
+
+  async function deriveKey(pass) {
+    const baseKey = await crypto.subtle.importKey("raw", enc.encode(pass), { name: "PBKDF2" }, false, ["deriveKey"]);
+    return crypto.subtle.deriveKey({ name: "PBKDF2", hash: "SHA-256", salt: b64dec(SALT_B64), iterations: ITER }, baseKey, { name: "AES-GCM", length: 256 }, false, ["decrypt"]);
+  }
+
+  async function tryOpen(pass) {
+    const key = await deriveKey(pass);
+    try {
+      const pt = await crypto.subtle.decrypt({ name: "AES-GCM", iv: b64dec(IV_B64) }, key, b64dec(CT_B64));
+      return dec.decode(pt);
+    } catch (e) {
+      return null;
+    }
+  }
+
+  async function run() {
+    const now = Date.now();
+    if (now < until) { msg.textContent = `(${Math.ceil((until - now) / 1e3)}s)`; return; }
+    const v = (p.value || "").trim();
+    if (!v) { msg.textContent = "Wpisz haslo."; return; }
+    const url = await tryOpen(v);
+    if (url) { msg.textContent = ""; rm("vlt_lock"); location.href = url; return; }
+    fails++; p.value = ""; p.focus();
+    if (fails >= MAX) { until = Date.now() + LOCK_MS; ss("vlt_lock", String(until)); msg.textContent = "Zbyt wiele prob, odczekaj."; fails = 0; } else { msg.textContent = "Zle haslo."; }
+  }
+
+  btn.addEventListener("click", run);
+  p.addEventListener("keyup", e => { if (e.key === "Enter") run(); });
 })();
-</script></main></body></html>
+  </script></main></body></html>
+  
