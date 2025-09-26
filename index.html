@@ -12,6 +12,7 @@
       --font: ui-sans-serif, system-ui, -apple-system, Segoe UI, Inter, Roboto, Arial, sans-serif;
       --fg:#f3f3f3; --muted:#9a9a9a;
 
+      /* glass tokens */
       --card: rgba(255,255,255,.06);
       --card-hover: rgba(255,255,255,.08);
       --stroke: rgba(255,255,255,.16);
@@ -46,6 +47,7 @@
 
     .wrap{ width:var(--w); padding:28px 16px 64px; position:relative; z-index:1; }
 
+    /* HEADER – GLASS */
     header.profile{
       position:relative;
       display:flex; gap:18px; align-items:center; padding:18px 20px;
@@ -78,65 +80,30 @@
       100% { opacity:1; transform: none }
     }
 
-    @property --s{ syntax: '<angle>'; inherits: false; initial-value: 0deg; }
-
+    /* AVATAR RING */
     .pfp{
-      position:relative;
       width:88px; height:88px; border-radius:50%; object-fit:cover;
-      border:2px solid transparent;
+      border:2px solid rgba(255,26,26,0);
+      box-shadow:none;
       transform: translateZ(0);
-      animation: breathe 6s ease-in-out 1.4s infinite;
-      z-index:0;
+      transition: border-color 1s ease, box-shadow 1s ease;
+      animation: pfpBorder 1.4s ease-out .2s forwards, breathe 6s ease-in-out 1.4s infinite;
+      -webkit-mask-image: radial-gradient(circle at 50% 50%, #000 100%, rgba(0,0,0,0) 101%);
+      mask-image: radial-gradient(circle at 50% 50%, #000 100%, rgba(0,0,0,0) 101%);
+      -webkit-mask-size: 200% 200%; -webkit-mask-position: 50% 50%;
+      mask-size: 200% 200%; mask-position: 50% 50%;
     }
-
-    .pfp::before{
-      content:"";
-      position:absolute; inset:0; border-radius:50%; pointer-events:none;
-
-      background:
-        conic-gradient(from -90deg,
-          var(--accent) 0deg var(--s),
-          rgba(255,26,26,.14) var(--s) 1turn),
-
-        conic-gradient(from -90deg,
-          rgba(255,255,255,.9) calc(var(--s) - 2deg) var(--s),
-          transparent var(--s) 1turn);
-
-      -webkit-mask: radial-gradient(farthest-side,
-                    transparent calc(100% - 2px), #000 calc(100% - 2px));
-              mask: radial-gradient(farthest-side,
-                    transparent calc(100% - 2px), #000 calc(100% - 2px));
-
-      filter: drop-shadow(0 0 10px rgba(255,26,26,.35));
-      opacity: 0;
-
-      animation:
-        sweepClock 1.15s cubic-bezier(.18,.7,.15,1) .25s forwards,
-        ringPulse .6s ease-out 1.45s 1 both;
-      z-index:2;
-    }
-
-    .pfp::after{
-      content:""; position:absolute; inset:0; border-radius:50%;
-      box-shadow: var(--glow); pointer-events:none; z-index:1;
-    }
-
-    @keyframes sweepClock{
-      0%   { --s: 0deg;   opacity: 0;   transform: scale(.985) }
-      8%   {               opacity: .55 }
-      100% { --s: 360deg; opacity: 1;   transform: none }
-    }
-    @keyframes ringPulse{
-      0%   { filter: drop-shadow(0 0 2px rgba(255,26,26,.25)); }
-      50%  { filter: drop-shadow(0 0 14px rgba(255,26,26,.6)); }
-      100% { filter: drop-shadow(0 0 8px rgba(255,26,26,.35)); }
+    @keyframes pfpBorder{
+      0%{ opacity:0; border-color: rgba(255,26,26,0); box-shadow:none }
+      20%{ opacity:1; border-color: rgba(255,26,26,.25) }
+      100%{ border-color: rgba(255,26,26,1); box-shadow: var(--glow) }
     }
 
     .name{margin:0; font-size:clamp(22px,3.4vw,30px); letter-spacing:.2px; opacity:0; animation: textIn 1s ease .8s forwards}
     .bio {margin:6px 0 0; color:var(--muted); opacity:0; animation: textIn 1s ease 1s forwards}
     @keyframes textIn{ from{ transform: translateY(4px); opacity:0 } to{ transform:none; opacity:1 } }
 
-    /* ===== LINKS ===== */
+    /* LINKS – GLASS */
     .links{ width: var(--w-links); margin: 22px auto 0; display:grid; gap:14px; }
 
     .link{
@@ -183,7 +150,8 @@
       border-color: color-mix(in oklab, var(--accent) 38%, var(--stroke));
       background: var(--card-hover);
       box-shadow: 0 10px 30px rgba(0,0,0,.45), 0 0 24px rgba(255,26,26,.18);
-      translate: 0 -2px; scale: 1.01;
+      translate: 0 -2px;            /* mniejsze unoszenie */
+      scale: 1.01;                   /* mniejsze powiększenie */
       filter: brightness(1.02) contrast(1.02);
     }
     .link:hover::after{ opacity:1 }
@@ -191,14 +159,19 @@
     .title{font-weight:700; letter-spacing:.2px}
     .desc {font-size:13px; color:var(--muted); margin-top:4px}
 
+    /* ANIMS */
     @keyframes fadeIn{ to{ opacity:1 } }
     @keyframes bgDrift{ from{ transform: translate3d(0,0,0) scale(1.06) } to{ transform: translate3d(0,-10px,0) scale(1.08) } }
     @keyframes breathe{ 0%,100%{ transform: scale(1) } 50%{ transform: scale(1.03) } }
     @keyframes sweep{ 0%{transform:translateX(-120%)} 12%{transform:translateX(120%)} 100%{transform:translateX(120%)} }
 
-    /* MOBILE */
+    /* ===== MOBILE FIXES ===== */
     @media (max-width: 600px){
-      :root{ --w: 96vw; --w-links: 94vw; --radius: 18px; }
+      :root{
+        --w: 96vw;
+        --w-links: 94vw;
+        --radius: 18px;
+      }
       body{ font-size: 15px; }
       .wrap{ width:var(--w); padding:18px 10px 40px; }
       header.profile{
