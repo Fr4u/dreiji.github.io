@@ -8,162 +8,165 @@
   <style>
     :root{
       --w: min(900px, 92vw);
-      --w-links: min(760px, 88vw); /* linki węższe niż header */
+      --w-links: min(760px, 88vw);
       --font: ui-sans-serif, system-ui, -apple-system, Segoe UI, Inter, Roboto, Arial, sans-serif;
       --fg:#f3f3f3; --muted:#9a9a9a;
-      --card: rgba(0,0,0,.52);
-      --stroke: rgba(255,255,255,.10);
+      --card: rgba(255,255,255,.06);              /* szkło */
+      --card-hover: rgba(255,255,255,.08);
+      --stroke: rgba(255,255,255,.16);            /* jaśniejsza ramka szkła */
+      --stroke-soft: rgba(255,255,255,.12);
       --accent:#ff1a1a; --glow: 0 0 28px rgba(255,26,26,.38);
-      --speed:.18s;
       --radius: 24px;
     }
     *{box-sizing:border-box}
     html,body{height:100%}
 
-    /* ===== BODY + BG ===== */
     body{
       margin:0; color:var(--fg); font:16px/1.55 var(--font);
       min-height:100%; display:grid; place-items:center; overflow:hidden;
       background:#08090b;
-      opacity:0; animation:fadeIn .6s ease forwards;
+      opacity:0; animation:fadeIn 1.2s ease forwards;
     }
+
     .bg{
       position:fixed; inset:0; z-index:0; pointer-events:none;
       background-image:
         radial-gradient(60% 40% at 50% 10%, rgba(255,26,26,.12), transparent 60%),
-        linear-gradient(to bottom, rgba(0,0,0,.72), rgba(0,0,0,.94)),
+        linear-gradient(to bottom, rgba(0,0,0,.78), rgba(0,0,0,.96)),
         url('background.png');
       background-size: 100% 100%, 100% 100%, cover;
       background-position: center top, center, center 48%;
       filter: saturate(1.02) contrast(1.02);
       transform: scale(1.06);
-      animation: bgDrift 18s ease-in-out infinite alternate;
+      animation: bgDrift 22s ease-in-out infinite alternate;
     }
 
     .wrap{ width:var(--w); padding:28px 16px 64px; position:relative; z-index:1; }
 
-    /* ===== HEADER (szerszy panel) ===== */
+    /* ================= HEADER – GLASS ================= */
     header.profile{
       position:relative;
       display:flex; gap:18px; align-items:center; padding:18px 20px;
       border-radius: var(--radius);
-      background: transparent;
-      border:1px solid transparent;
-      box-shadow:none;
-      backdrop-filter: blur(6px);
+      background: var(--card);
+      border:1px solid var(--stroke-soft);
+      box-shadow: 0 8px 24px rgba(0,0,0,.45);
+      backdrop-filter: blur(12px) saturate(140%);
+      -webkit-backdrop-filter: blur(12px) saturate(140%);
       overflow:hidden;
-      opacity:0;          /* fade-in całości + ramki + tła */
-      animation: headerIn .7s cubic-bezier(.2,.8,.2,1) .05s forwards;
+      opacity:0;
+      animation: headerIn 1.2s cubic-bezier(.2,.8,.2,1) .1s forwards;
     }
-    /* płynne pojawienie się tła karty */
-    @keyframes headerIn{
-      0%   { opacity:0; background: rgba(0,0,0,0); border-color: transparent; box-shadow:none; transform: translateY(8px) }
-      60%  { opacity:1; background: rgba(0,0,0,.28); border-color: rgba(255,255,255,.06); box-shadow: none; transform: translateY(2px) }
-      100% { opacity:1; background: var(--card); border-color: var(--stroke); box-shadow: 0 8px 24px rgba(0,0,0,.5); transform: none }
+    /* połysk szkła */
+    header.profile::before{
+      content:""; position:absolute; inset:0; pointer-events:none;
+      background: linear-gradient(145deg, rgba(255,255,255,.09), rgba(255,255,255,0) 55%);
+      opacity:.8;
     }
-
-    /* smuga światła co 5s */
+    /* smuga światła */
     header.profile::after{
       content:""; position:absolute; inset:-2px; pointer-events:none; mix-blend-mode:screen;
-      background:
-        linear-gradient(120deg,
-          transparent 15%, rgba(255,255,255,.06) 30%,
-          rgba(255,26,26,.08) 50%, rgba(255,255,255,.06) 70%, transparent 85%);
+      background: linear-gradient(120deg,
+        transparent 15%, rgba(255,255,255,.06) 30%,
+        rgba(255,26,26,.08) 50%, rgba(255,255,255,.06) 70%, transparent 85%);
       transform: translateX(-120%) rotate(0.001deg);
-      animation: sweep 5s ease-in-out infinite;
+      animation: sweep 7s ease-in-out infinite;
     }
 
-    /* ===== AVATAR (fade-in ramki + glow + mask reveal) ===== */
+    @keyframes headerIn{
+      0%   { opacity:0; transform: translateY(8px) scale(.98) }
+      60%  { opacity:1; border-color: var(--stroke-soft) }
+      100% { opacity:1; transform: none }
+    }
+
+    /* ================= AVATAR ================= */
     .pfp{
       width:88px; height:88px; border-radius:50%; object-fit:cover;
-      border:2px solid transparent; box-shadow:none;
+      border:2px solid rgba(255,26,26,0);
+      box-shadow:none;
       transform: translateZ(0);
-      animation: pfpBorder .9s ease-out .15s forwards, breathe 5s ease-in-out .9s infinite;
-      -webkit-mask-image: radial-gradient(circle at 50% 50%, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 0%);
+      transition: border-color 1s ease, box-shadow 1s ease;
+      animation: pfpBorder 1.4s ease-out .2s forwards, breathe 6s ease-in-out 1.4s infinite;
+      -webkit-mask-image: radial-gradient(circle at 50% 50%, #000 100%, rgba(0,0,0,0) 101%);
+      mask-image: radial-gradient(circle at 50% 50%, #000 100%, rgba(0,0,0,0) 101%);
       -webkit-mask-size: 200% 200%; -webkit-mask-position: 50% 50%;
-              mask-image: radial-gradient(circle at 50% 50%, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 0%);
-              mask-size: 200% 200%;     mask-position: 50% 50%;
+      mask-size: 200% 200%; mask-position: 50% 50%;
     }
     @keyframes pfpBorder{
-      0%   { opacity:0; border-color:transparent; box-shadow:none;
-             -webkit-mask-image: radial-gradient(circle at 50% 50%, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 0%);
-                     mask-image: radial-gradient(circle at 50% 50%, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 0%); }
-      40%  { opacity:1; border-color: rgba(255,26,26,.35);
-             -webkit-mask-image: radial-gradient(circle at 50% 50%, rgba(0,0,0,1) 28%, rgba(0,0,0,0) 29%);
-                     mask-image: radial-gradient(circle at 50% 50%, rgba(0,0,0,1) 28%, rgba(0,0,0,0) 29%); }
-      100% { opacity:1; border-color: var(--accent); box-shadow: var(--glow);
-             -webkit-mask-image: radial-gradient(circle at 50% 50%, rgba(0,0,0,1) 70%, rgba(0,0,0,0) 71%);
-                     mask-image: radial-gradient(circle at 50% 50%, rgba(0,0,0,1) 70%, rgba(0,0,0,0) 71%); }
+      0%{ opacity:0; border-color: rgba(255,26,26,0); box-shadow:none }
+      20%{ opacity:1; border-color: rgba(255,26,26,.25) }
+      100%{ border-color: rgba(255,26,26,1); box-shadow: var(--glow) }
     }
 
-    .name{margin:0; font-size:clamp(22px,3.4vw,30px); letter-spacing:.2px; opacity:0; animation: textIn .55s ease .1s forwards}
-    .bio {margin:6px 0 0; color:var(--muted); opacity:0; animation: textIn .55s ease .18s forwards}
-
+    .name{margin:0; font-size:clamp(22px,3.4vw,30px); letter-spacing:.2px; opacity:0; animation: textIn 1s ease .8s forwards}
+    .bio {margin:6px 0 0; color:var(--muted); opacity:0; animation: textIn 1s ease 1s forwards}
     @keyframes textIn{ from{ transform: translateY(4px); opacity:0 } to{ transform:none; opacity:1 } }
 
-    /* ===== LINKS (węższe niż header) ===== */
-    .links{
-      width: var(--w-links);
-      margin: 22px auto 0;
-      display:grid; gap:14px;
-    }
+    /* ================= LINKI – GLASS ================= */
+    .links{ width: var(--w-links); margin: 22px auto 0; display:grid; gap:14px; }
+
     .link{
       position:relative; display:flex; align-items:center; justify-content:center; text-align:center;
       padding:18px; border-radius:18px;
       color:inherit; text-decoration:none; cursor:pointer;
-      background: rgba(0,0,0,.0); border:1px solid transparent; box-shadow:none;
-      transform: translateY(6px) scale(.985);
+      background: var(--card);
+      border:1px solid var(--stroke-soft);
+      box-shadow: 0 6px 20px rgba(0,0,0,.35);
+      backdrop-filter: blur(10px) saturate(140%);
+      -webkit-backdrop-filter: blur(10px) saturate(140%);
+      translate: 0 6px; scale:.985; transform: translateZ(0);
       opacity:0;
-      animation: linkIn .6s cubic-bezier(.2,.8,.2,1) forwards;
-      overflow:hidden; will-change: transform, box-shadow, opacity, border-color, background;
-    }
-    /* fade-in tła i obramowania dla kafelków */
-    @keyframes linkIn{
-      0%   { opacity:0; border-color:transparent; background: rgba(0,0,0,0) }
-      55%  { opacity:1; border-color: rgba(255,255,255,.12); background: rgba(0,0,0,.28) }
-      100% { opacity:1; border-color: var(--stroke); background: var(--card); transform:none }
+      animation: linkIn 1.2s cubic-bezier(.2,.8,.2,1) forwards;
+      overflow:hidden;
+      transition: translate .4s ease, scale .4s ease, box-shadow .4s ease,
+                 border-color .45s ease, background .45s ease, filter .3s ease;
     }
 
-    /* sekwencja wejścia */
-    .links .link:nth-child(1){ animation-delay:.08s }
-    .links .link:nth-child(2){ animation-delay:.14s }
-    .links .link:nth-child(3){ animation-delay:.20s }
-    .links .link:nth-child(4){ animation-delay:.26s }
-    .links .link:nth-child(5){ animation-delay:.32s }
-    .links .link:nth-child(6){ animation-delay:.38s }
-    .links .link:nth-child(7){ animation-delay:.44s }
-
-    /* mikro-hover + hotspot świetlny pod kursorem */
+    /* połysk szkła na kafelkach */
+    .link::before{
+      content:""; position:absolute; inset:0; pointer-events:none; border-radius:inherit;
+      background: linear-gradient(160deg, rgba(255,255,255,.08), rgba(255,255,255,0) 55%);
+      opacity:.85; transition: opacity .3s ease;
+    }
+    /* hotspot */
     .link::after{
       content:""; position:absolute; inset:-2px; border-radius:20px; pointer-events:none;
       background: radial-gradient(300px 120px at var(--mx,50%) var(--my,50%), rgba(255,26,26,.16), transparent 60%);
-      opacity:0; transition: opacity .25s ease;
+      opacity:0; transition: opacity .35s ease;
     }
+
+    @keyframes linkIn{
+      0%   { opacity:0; transform: translateY(8px) scale(.98); border-color:transparent; background: rgba(255,255,255,.02) }
+      55%  { opacity:1; border-color: var(--stroke-soft); background: var(--card) }
+      100% { opacity:1; border-color: var(--stroke); background: var(--card); transform:none }
+    }
+
+    .links .link:nth-child(1){ animation-delay:.18s }
+    .links .link:nth-child(2){ animation-delay:.36s }
+    .links .link:nth-child(3){ animation-delay:.54s }
+    .links .link:nth-child(4){ animation-delay:.72s }
+    .links .link:nth-child(5){ animation-delay:.90s }
+    .links .link:nth-child(6){ animation-delay:1.08s }
+    .links .link:nth-child(7){ animation-delay:1.26s }
+
     .link:hover{
       border-color: color-mix(in oklab, var(--accent) 38%, var(--stroke));
-      box-shadow: var(--glow);
-      transform: translateY(-1px);
+      background: var(--card-hover);
+      box-shadow: 0 10px 30px rgba(0,0,0,.45), 0 0 24px rgba(255,26,26,.18);
+      translate: 0 -3px; scale: 1.02;
+      filter: brightness(1.02) contrast(1.02);
     }
     .link:hover::after{ opacity:1 }
 
     .title{font-weight:700; letter-spacing:.2px}
     .desc {font-size:13px; color:var(--muted); margin-top:4px}
 
-    /* ===== ACCESSIBILITY ===== */
-    .link:focus-visible, .pfp:focus-visible, header.profile:focus-within{
-      outline:2px solid var(--accent); outline-offset:3px; border-radius:calc(var(--radius) + 2px);
-    }
-
-    /* ===== ANIMS ===== */
+    /* ================= ANIMS/UTIL ================= */
     @keyframes fadeIn{ to{ opacity:1 } }
-    @keyframes bgDrift{
-      from{ transform: translate3d(0,0,0) scale(1.06); filter: saturate(1.02) }
-      to  { transform: translate3d(0,-10px,0) scale(1.08); filter: saturate(1.05) }
-    }
+    @keyframes bgDrift{ from{ transform: translate3d(0,0,0) scale(1.06) } to{ transform: translate3d(0,-10px,0) scale(1.08) } }
     @keyframes breathe{ 0%,100%{ transform: scale(1) } 50%{ transform: scale(1.03) } }
     @keyframes sweep{ 0%{transform:translateX(-120%)} 12%{transform:translateX(120%)} 100%{transform:translateX(120%)} }
 
-    /* ===== REDUCED MOTION ===== */
     @media (prefers-reduced-motion: reduce){
       *{animation: none !important; transition: none !important}
       .bg{transform:none}
@@ -180,7 +183,6 @@
 
   <main class="wrap">
     <header class="profile">
-      <!-- klikalne, ale bez kursora „rączki” -->
       <img class="pfp" src="avatar.png" alt="avatar" tabindex="0"
            onclick="location.href='/vault-r3d-only-9d8f6a/'"
            onkeydown="if(event.key==='Enter') location.href='/vault-r3d-only-9d8f6a/'">
@@ -225,12 +227,15 @@
   </main>
 
   <script>
-    // hotspot świetlny pod kursorem na kafelkach
     document.querySelectorAll('.link').forEach(el=>{
       el.addEventListener('mousemove', e=>{
         const r = el.getBoundingClientRect();
         el.style.setProperty('--mx', ((e.clientX - r.left)/r.width*100)+'%');
         el.style.setProperty('--my', ((e.clientY - r.top )/r.height*100)+'%');
+      });
+      el.addEventListener('mouseleave', ()=>{
+        el.style.removeProperty('--mx');
+        el.style.removeProperty('--my');
       });
     });
   </script>
