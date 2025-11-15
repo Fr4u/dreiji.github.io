@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>...</title>
   <style>
+    html:not([data-secret="ok"]) body { display: none; }
     body {
       margin: 0;
       min-height: 100vh;
@@ -38,6 +39,25 @@
       box-shadow: 0 4px 14px rgba(0,0,0,.6);
     }
   </style>
+  <script>
+    (() => {
+      const TOKEN_KEY = 'dreiji.once.token';
+      const PATH_KEY = 'dreiji.once.path';
+      try {
+        const token = sessionStorage.getItem(TOKEN_KEY);
+        const expectedPath = sessionStorage.getItem(PATH_KEY);
+        sessionStorage.removeItem(TOKEN_KEY);
+        sessionStorage.removeItem(PATH_KEY);
+        if (!token || !expectedPath) throw new Error('no access');
+        const currentPath = location.pathname.replace(/\/+$/, '');
+        const currentHash = (location.hash || '').replace(/^#/, '');
+        if (expectedPath !== currentPath || token !== currentHash) throw new Error('mismatch');
+        document.documentElement.setAttribute('data-secret', 'ok');
+      } catch (err) {
+        window.location.replace('../');
+      }
+    })();
+  </script>
 </head>
 <body>
   <div class="quote">Noszę ciężar, którego nie nazwę.</div>
