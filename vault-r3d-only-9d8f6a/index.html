@@ -8,9 +8,13 @@
   let fails = 0;
   const enc = new TextEncoder(), dec = new TextDecoder();
   const b64dec = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
+  const TOKEN_KEY = "dreiji.once.token";
+  const PATH_KEY = "dreiji.once.path";
   function ss(k, v) { try { sessionStorage.setItem(k, v) } catch (e) { } }
   function gs(k) { try { return sessionStorage.getItem(k) } catch (e) { return null } }
   function rm(k) { try { sessionStorage.removeItem(k) } catch (e) { } }
+  rm(TOKEN_KEY);
+  rm(PATH_KEY);
   let until = Number(gs("vlt_lock") || 0);
   if (until > Date.now()) msg.textContent = `(${Math.ceil((until - Date.now()) / 1e3)}s)`; else { rm("vlt_lock"); until = 0; }
 
@@ -35,7 +39,29 @@
     const v = (p.value || "").trim();
     if (!v) { msg.textContent = "Wpisz haslo."; return; }
     const url = await tryOpen(v);
-    if (url) { msg.textContent = ""; rm("vlt_lock"); location.href = url; return; }
+    if (url) {
+      msg.textContent = "";
+      rm("vlt_lock");
+      const target = (() => {
+        try {
+          return new URL(url, location.href);
+        } catch (e) {
+          return new URL(String(url), location.href);
+        }
+      })();
+      try {
+        const tokenBytes = crypto.getRandomValues(new Uint8Array(12));
+        const token = Array.from(tokenBytes, b => b.toString(16).padStart(2, '0')).join('');
+        const cleanPath = target.pathname.replace(/\/+$/, '');
+        ss(TOKEN_KEY, token);
+        ss(PATH_KEY, cleanPath);
+        target.hash = token;
+        location.href = target.href;
+      } catch (e) {
+        location.href = target.href;
+      }
+      return;
+    }
     fails++; p.value = ""; p.focus();
     if (fails >= MAX) { until = Date.now() + LOCK_MS; ss("vlt_lock", String(until)); msg.textContent = "Zbyt wiele prob, odczekaj."; fails = 0; } else { msg.textContent = "Zle haslo."; }
   }
