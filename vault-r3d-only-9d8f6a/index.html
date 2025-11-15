@@ -1,73 +1,289 @@
-<!doctype html><html lang="pl"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><title>?</title><meta name="robots" content="noindex,nofollow"/><style>:root{--bg:#0a0a0a;--fg:#f3f3f3;--muted:#9a9a9a;--card:rgba(0,0,0,.55);--accent:#ff1a1a;--stroke:rgba(255,255,255,.08);--glow:0 0 24px rgba(255,26,26,.25);--font:ui-sans-serif,system-ui,-apple-system,Segoe UI,Inter,Roboto,Arial,sans-serif}*{box-sizing:border-box}html,body{height:100%}body{margin:0;font:16px/1.5 var(--font);color:var(--fg);background:var(--bg);display:grid;place-items:center}main.card{width:min(880px,92vw);padding:28px;border-radius:12px;background:var(--card);border:1px solid var(--stroke);box-shadow:0 12px 40px rgba(0,0,0,.6)}h1{margin:0 0 8px;font-size:20px}p{margin:0 0 16px;color:var(--muted)}.gate{display:flex;gap:10px;margin-top:14px}.pin{flex:1;padding:12px 14px;border-radius:10px;border:1px solid var(--stroke);background:transparent;color:var(--fg);outline:none;font-size:16px}.btn{padding:12px 14px;border-radius:10px;border:1px solid var(--stroke);background:linear-gradient(180deg, rgba(255,26,26,.12), rgba(255,26,26,.06));color:var(--fg);cursor:pointer}.btn:hover{box-shadow:var(--glow);border-color:var(--accent);transform:translateY(-1px)}.msg{margin-top:10px;color:#ffb3b3;font-size:14px;min-height:18px}</style></head><body><main class="card" role="main" aria-labelledby="t"><p>Wpisz hasło, żeby przejść dalej.</p><div class="gate"><input id="p" class="pin" type="password" inputmode="text" placeholder="Wpisz hasło" autocomplete="off" aria-label="Hasło"/><button id="b" class="btn" aria-label="Wejdź">Wejdź</button></div><div id="m" class="msg"></div><script>
-(() => {
-  'use strict';
-  const d = document, p = d.getElementById('p'), btn = d.getElementById('b'), msg = d.getElementById('m');
-  const ITER = 200000, SALT_B64 = "oZ7bzZfZuBNJnr6HsHcdAg==", IV_B64 = "q+7qOFzi73M1vNSN",
-        CT_B64 = "Nufafun4ARmYwiyJUasx/8OjIfumGPf5i4R8O4G5Z97hSaIxd8/7eJYZet4wujhBxs1cN03nkgOazzDueixarVWy9Kmm9WSAXoiBdg==";
-  const MAX = 5, LOCK_MS = 30000;
-  let fails = 0;
-  const enc = new TextEncoder(), dec = new TextDecoder();
-  const b64dec = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
-  const TOKEN_KEY = "dreiji.once.token";
-  const PATH_KEY = "dreiji.once.path";
-  function ss(k, v) { try { sessionStorage.setItem(k, v) } catch (e) { } }
-  function gs(k) { try { return sessionStorage.getItem(k) } catch (e) { return null } }
-  function rm(k) { try { sessionStorage.removeItem(k) } catch (e) { } }
-  rm(TOKEN_KEY);
-  rm(PATH_KEY);
-  let until = Number(gs("vlt_lock") || 0);
-  if (until > Date.now()) msg.textContent = `(${Math.ceil((until - Date.now()) / 1e3)}s)`; else { rm("vlt_lock"); until = 0; }
-
-  async function deriveKey(pass) {
-    const baseKey = await crypto.subtle.importKey("raw", enc.encode(pass), { name: "PBKDF2" }, false, ["deriveKey"]);
-    return crypto.subtle.deriveKey({ name: "PBKDF2", hash: "SHA-256", salt: b64dec(SALT_B64), iterations: ITER }, baseKey, { name: "AES-GCM", length: 256 }, false, ["decrypt"]);
-  }
-
-  async function tryOpen(pass) {
-    const key = await deriveKey(pass);
-    try {
-      const pt = await crypto.subtle.decrypt({ name: "AES-GCM", iv: b64dec(IV_B64) }, key, b64dec(CT_B64));
-      return dec.decode(pt);
-    } catch (e) {
-      return null;
+<!doctype html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>THE_DEVIL</title>
+  <meta name="robots" content="noindex,nofollow" />
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: radial-gradient(circle at 20% 20%, rgba(255, 60, 60, 0.15), transparent 60%),
+             radial-gradient(circle at 80% 0%, rgba(255, 26, 26, 0.22), transparent 70%),
+             #050506;
+      --panel: rgba(12, 12, 15, 0.8);
+      --panel-border: rgba(255, 255, 255, 0.08);
+      --accent: #ff1f1f;
+      --text: #f4f4f4;
+      --muted: #9a9a9a;
+      --radius: 18px;
+      --shadow: 0 20px 50px rgba(0, 0, 0, 0.65);
+      font-family: "Inter", "Segoe UI", -apple-system, BlinkMacSystemFont, sans-serif;
     }
-  }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      display: grid;
+      place-items: center;
+      padding: 32px 16px;
+      background: var(--bg);
+      color: var(--text);
+    }
+    main {
+      width: min(420px, 90vw);
+      padding: 32px 28px;
+      border-radius: var(--radius);
+      background: var(--panel);
+      border: 1px solid var(--panel-border);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(18px) saturate(140%);
+      -webkit-backdrop-filter: blur(18px) saturate(140%);
+      display: grid;
+      gap: 18px;
+    }
+    h1 {
+      margin: 0;
+      font-size: 22px;
+      letter-spacing: 0.3px;
+    }
+    p.desc {
+      margin: 0;
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.6;
+    }
+    form {
+      display: grid;
+      gap: 12px;
+    }
+    label {
+      font-size: 14px;
+      letter-spacing: 0.4px;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .field {
+      display: flex;
+      gap: 10px;
+      align-items: stretch;
+    }
+    input[type="password"] {
+      flex: 1;
+      border-radius: 14px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      background: rgba(5, 5, 8, 0.85);
+      color: inherit;
+      font: inherit;
+      padding: 14px 16px;
+      outline: none;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    input[type="password"]:focus {
+      border-color: rgba(255, 31, 31, 0.55);
+      box-shadow: 0 0 0 3px rgba(255, 31, 31, 0.15);
+    }
+    button {
+      border-radius: 14px;
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      background: linear-gradient(180deg, rgba(255, 45, 45, 0.25), rgba(120, 0, 0, 0.35));
+      color: inherit;
+      font: inherit;
+      padding: 14px 20px;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+    }
+    button:hover {
+      transform: translateY(-1px);
+      border-color: rgba(255, 120, 120, 0.55);
+      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
+    }
+    button:active {
+      transform: translateY(0);
+    }
+    .message {
+      min-height: 18px;
+      font-size: 14px;
+      color: rgba(255, 200, 200, 0.85);
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <div>
+      <h1>Wpisz hasło</h1>
+      <p class="desc">Tylko właściwe słowo otworzy odpowiednie drzwi.</p>
+    </div>
+    <form id="gate" autocomplete="off">
+      <label for="pass">Hasło dostępu</label>
+      <div class="field">
+        <input id="pass" type="password" inputmode="text" autocomplete="off" spellcheck="false" />
+        <button id="submit" type="submit">Przejdź</button>
+      </div>
+      <div id="msg" class="message" role="status" aria-live="polite"></div>
+    </form>
+  </main>
+  <script>
+    (() => {
+      'use strict';
+      const doc = document;
+      const form = doc.getElementById('gate');
+      const input = doc.getElementById('pass');
+      const message = doc.getElementById('msg');
 
-  async function run() {
-    const now = Date.now();
-    if (now < until) { msg.textContent = `(${Math.ceil((until - now) / 1e3)}s)`; return; }
-    const v = (p.value || "").trim();
-    if (!v) { msg.textContent = "Wpisz haslo."; return; }
-    const url = await tryOpen(v);
-    if (url) {
-      msg.textContent = "";
-      rm("vlt_lock");
-      const target = (() => {
-        try {
-          return new URL(url, location.href);
-        } catch (e) {
-          return new URL(String(url), location.href);
-        }
-      })();
-      try {
-        const tokenBytes = crypto.getRandomValues(new Uint8Array(12));
-        const token = Array.from(tokenBytes, b => b.toString(16).padStart(2, '0')).join('');
-        const cleanPath = target.pathname.replace(/\/+$/, '');
-        ss(TOKEN_KEY, token);
-        ss(PATH_KEY, cleanPath);
-        target.hash = token;
-        location.href = target.href;
-      } catch (e) {
-        location.href = target.href;
+      const enc = new TextEncoder();
+      const SALT = 'dreiji:v1|';
+      const PASS_MAP = new Map([
+        ['a2542dac8e3c45465bda6bbf0da37aff57c9fdde839002fcb1638e2ed453a8fd', '/vault-r3d-only-9d8f6a/95tG205fvsd94210eDT/'],
+        ['3532517b9539dcbd4f92733de550b2e63d36b475779e1ec5a539c50940514871', '/vault-r3d-only-9d8f6a/9afgHKWc7zoskAodp38/']
+      ]);
+
+      const TOKEN_KEY = 'dreiji.once.token';
+      const PATH_KEY = 'dreiji.once.path';
+      const LOCK_KEY = 'dreiji.vault.lock';
+      const MAX_ATTEMPTS = 5;
+      const LOCK_TIME = 30000;
+
+      let attempts = 0;
+      let lockedUntil = readLock();
+      let tick = null;
+
+      clearSession();
+      if (lockedUntil > Date.now()) {
+        startLockCountdown();
+      } else {
+        clearLock();
       }
-      return;
-    }
-    fails++; p.value = ""; p.focus();
-    if (fails >= MAX) { until = Date.now() + LOCK_MS; ss("vlt_lock", String(until)); msg.textContent = "Zbyt wiele prob, odczekaj."; fails = 0; } else { msg.textContent = "Zle haslo."; }
-  }
 
-  btn.addEventListener("click", run);
-  p.addEventListener("keyup", e => { if (e.key === "Enter") run(); });
-})();
-  </script></main></body></html>
-  
+      form.addEventListener('submit', evt => {
+        evt.preventDefault();
+        handleSubmit();
+      });
+
+      input.addEventListener('keyup', evt => {
+        if (evt.key === 'Enter') {
+          evt.preventDefault();
+          handleSubmit();
+        }
+      });
+
+      async function handleSubmit() {
+        if (Date.now() < lockedUntil) {
+          startLockCountdown();
+          return;
+        }
+        const raw = (input.value || '').trim();
+        if (!raw) {
+          setMessage('Wpisz hasło.');
+          return;
+        }
+        setMessage('');
+        const fingerprint = await digest(raw);
+        const targetPath = PASS_MAP.get(fingerprint);
+        if (targetPath) {
+          attempts = 0;
+          clearLock();
+          openPath(targetPath);
+          return;
+        }
+        attempts += 1;
+        input.value = '';
+        input.focus();
+        if (attempts >= MAX_ATTEMPTS) {
+          lockedUntil = Date.now() + LOCK_TIME;
+          storeLock(lockedUntil);
+          attempts = 0;
+          startLockCountdown();
+        } else {
+          setMessage('Niepoprawne hasło.');
+        }
+      }
+
+      function setMessage(text) {
+        message.textContent = text;
+      }
+
+      function clearSession() {
+        try {
+          sessionStorage.removeItem(TOKEN_KEY);
+          sessionStorage.removeItem(PATH_KEY);
+        } catch (err) {
+          /* ignore */
+        }
+      }
+
+      function readLock() {
+        try {
+          return Number(sessionStorage.getItem(LOCK_KEY)) || 0;
+        } catch (err) {
+          return 0;
+        }
+      }
+
+      function storeLock(value) {
+        try {
+          sessionStorage.setItem(LOCK_KEY, String(value));
+        } catch (err) {
+          /* ignore */
+        }
+      }
+
+      function clearLock() {
+        lockedUntil = 0;
+        if (tick !== null) {
+          clearInterval(tick);
+          tick = null;
+        }
+        try {
+          sessionStorage.removeItem(LOCK_KEY);
+        } catch (err) {
+          /* ignore */
+        }
+        setMessage('');
+      }
+
+      function startLockCountdown() {
+        updateCountdown();
+        if (tick === null) {
+          tick = setInterval(() => {
+            if (Date.now() >= lockedUntil) {
+              clearLock();
+            } else {
+              updateCountdown();
+            }
+          }, 250);
+        }
+      }
+
+      function updateCountdown() {
+        const remaining = Math.max(0, lockedUntil - Date.now());
+        setMessage(`Zbyt wiele prób, odczekaj (${Math.ceil(remaining / 1000)}s).`);
+      }
+
+      async function digest(pass) {
+        const buffer = await crypto.subtle.digest('SHA-256', enc.encode(SALT + pass));
+        return Array.from(new Uint8Array(buffer), b => b.toString(16).padStart(2, '0')).join('');
+      }
+
+      function openPath(path) {
+        try {
+          const url = new URL(path, location.origin);
+          const tokenBytes = crypto.getRandomValues(new Uint8Array(12));
+          const token = Array.from(tokenBytes, b => b.toString(16).padStart(2, '0')).join('');
+          const cleanPath = url.pathname.replace(/\/+$/, '');
+          try {
+            sessionStorage.setItem(TOKEN_KEY, token);
+            sessionStorage.setItem(PATH_KEY, cleanPath);
+          } catch (err) {
+            /* ignore */
+          }
+          url.hash = token;
+          location.href = url.href;
+        } catch (err) {
+          location.href = path;
+        }
+      }
+    })();
+  </script>
+</body>
+</html>
