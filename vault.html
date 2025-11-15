@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Tajna strefa</title>
+  <link rel="icon" href="w.png" />
+  <style>
+    :root{
+      --font: ui-sans-serif, system-ui, -apple-system, Segoe UI, Inter, Roboto, Arial, sans-serif;
+      --fg:#f3f3f3; --muted:#9a9a9a;
+      --card: rgba(255,255,255,.06);
+      --stroke: rgba(255,255,255,.18);
+      --accent:#ff1a1a;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0; min-height:100vh; display:grid; place-items:center; background:#08090b;
+      color:var(--fg); font:16px/1.55 var(--font);
+    }
+    .bg{
+      position:fixed; inset:0; z-index:0; pointer-events:none;
+      background-image:
+        radial-gradient(60% 40% at 50% 10%, rgba(255,26,26,.12), transparent 60%),
+        linear-gradient(to bottom, rgba(0,0,0,.78), rgba(0,0,0,.96)),
+        url('background.png');
+      background-size: 100% 100%, 100% 100%, cover;
+      background-position: center top, center, center 48%;
+      filter: saturate(1.02) contrast(1.02);
+      transform: scale(1.04);
+    }
+    main{
+      position:relative; z-index:1; width:min(520px, 92vw);
+      padding:36px 32px; border-radius:22px;
+      background: var(--card);
+      border:1px solid var(--stroke);
+      box-shadow: 0 18px 48px rgba(0,0,0,.55);
+      backdrop-filter: blur(14px) saturate(140%);
+      -webkit-backdrop-filter: blur(14px) saturate(140%);
+      display:grid; gap:18px;
+      text-align:center;
+    }
+    h1{ margin:0; font-size:clamp(26px, 5vw, 34px); }
+    p{ margin:0; color:var(--muted); }
+    .actions{ display:flex; flex-wrap:wrap; justify-content:center; gap:12px; margin-top:12px; }
+    button, a.button{
+      padding:12px 18px; border-radius:16px; border:1px solid var(--stroke);
+      background: rgba(0,0,0,.25); color:var(--fg); font:600 15px/1 var(--font);
+      cursor:pointer; text-decoration:none; transition: transform .2s ease, filter .25s ease;
+    }
+    button.primary{
+      background: var(--accent); color:#fff;
+    }
+    button:hover, a.button:hover{ filter:brightness(1.05); transform:translateY(-1px); }
+    button:active, a.button:active{ transform:translateY(1px); }
+  </style>
+</head>
+<body>
+  <div class="bg" aria-hidden="true"></div>
+  <main>
+    <h1>Witaj w tajnej strefie</h1>
+    <p>Ten zakątek internetu jest widoczny tylko po wpisaniu poprawnego hasła.</p>
+    <div class="actions">
+      <button class="primary" type="button" id="keep-secret">Pozostań tutaj</button>
+      <button type="button" id="lock-exit">Wyloguj i wróć</button>
+    </div>
+  </main>
+  <script>
+    const SECRET_FLAG = 'dreiji.secret.access';
+    if (sessionStorage.getItem(SECRET_FLAG) !== '1') {
+      window.location.replace('./');
+    }
+    document.getElementById('lock-exit').addEventListener('click', ()=>{
+      sessionStorage.removeItem(SECRET_FLAG);
+      window.location.href = './';
+    });
+    document.getElementById('keep-secret').addEventListener('click', ()=>{
+      alert('Hasło pozostaje bezpieczne.');
+    });
+  </script>
+</body>
+</html>
