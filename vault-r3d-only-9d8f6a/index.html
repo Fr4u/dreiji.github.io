@@ -8,22 +8,6 @@
   let fails = 0;
   const enc = new TextEncoder(), dec = new TextDecoder();
   const b64dec = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
-  const ACCESS_KEY = "dreiji.secret.access";
-  const URL_KEY = "dreiji.secret.url";
-  const lsSet = (k, v) => { try { localStorage.setItem(k, v) } catch (e) { } };
-  const lsGet = k => { try { return localStorage.getItem(k) } catch (e) { return null } };
-  const lsRm = k => { try { localStorage.removeItem(k) } catch (e) { } };
-  const storedUrl = lsGet(URL_KEY);
-  if (lsGet(ACCESS_KEY) === '1' && storedUrl) {
-    try {
-      const target = new URL(storedUrl, location.href);
-      location.replace(target.href);
-      return;
-    } catch (e) {
-      lsRm(URL_KEY);
-      lsRm(ACCESS_KEY);
-    }
-  }
   function ss(k, v) { try { sessionStorage.setItem(k, v) } catch (e) { } }
   function gs(k) { try { return sessionStorage.getItem(k) } catch (e) { return null } }
   function rm(k) { try { sessionStorage.removeItem(k) } catch (e) { } }
@@ -51,21 +35,7 @@
     const v = (p.value || "").trim();
     if (!v) { msg.textContent = "Wpisz haslo."; return; }
     const url = await tryOpen(v);
-    if (url) {
-      msg.textContent = "";
-      rm("vlt_lock");
-      try {
-        const target = new URL(url, location.href);
-        lsSet(ACCESS_KEY, '1');
-        lsSet(URL_KEY, target.href);
-        location.href = target.href;
-      } catch (e) {
-        lsSet(ACCESS_KEY, '1');
-        lsSet(URL_KEY, url);
-        location.href = url;
-      }
-      return;
-    }
+    if (url) { msg.textContent = ""; rm("vlt_lock"); location.href = url; return; }
     fails++; p.value = ""; p.focus();
     if (fails >= MAX) { until = Date.now() + LOCK_MS; ss("vlt_lock", String(until)); msg.textContent = "Zbyt wiele prob, odczekaj."; fails = 0; } else { msg.textContent = "Zle haslo."; }
   }
