@@ -160,6 +160,48 @@
     .title{font-weight:700; letter-spacing:.2px}
     .desc {font-size:13px; color:var(--muted); margin-top:4px}
 
+    .sr-only{
+      position:absolute; width:1px; height:1px; padding:0; margin:-1px;
+      overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0;
+    }
+
+    /* SECRET MODAL */
+    .modal-backdrop{
+      position:fixed; inset:0; display:grid; place-items:center;
+      background: rgba(5,6,8,.68);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      opacity:0; pointer-events:none; transition: opacity .3s ease;
+      z-index:5;
+    }
+    .modal-backdrop[aria-hidden="false"]{ opacity:1; pointer-events:auto; }
+    .modal{
+      width:min(420px, 92vw);
+      background: var(--card);
+      border-radius: var(--radius);
+      border:1px solid var(--stroke);
+      box-shadow: 0 18px 48px rgba(0,0,0,.55);
+      padding:28px 26px 24px;
+      display:grid; gap:18px;
+      animation: headerIn .4s ease;
+    }
+    .modal h2{ margin:0; font-size:22px; }
+    .modal p{ margin:0; color:var(--muted); font-size:14px; }
+    .modal form{ display:grid; gap:14px; }
+    .modal input{
+      padding:12px 14px; border-radius:14px; border:1px solid var(--stroke);
+      background: rgba(0,0,0,.25); color:var(--fg);
+      font:inherit;
+    }
+    .modal button{
+      padding:12px 14px; border-radius:14px; border:1px solid var(--stroke);
+      background: var(--accent); color:#fff; font-weight:600; cursor:pointer;
+      transition: filter .25s ease, transform .2s ease;
+    }
+    .modal button:hover{ filter:brightness(1.08); transform:translateY(-1px); }
+    .modal button:active{ transform:translateY(1px); }
+    .modal .error{ color:#ff8181; font-size:13px; min-height:18px; }
+
     /* ANIMS */
     @keyframes fadeIn{ to{ opacity:1 } }
     @keyframes bgDrift{ from{ transform: translate3d(0,0,0) scale(1.06) } to{ transform: translate3d(0,-10px,0) scale(1.08) } }
@@ -271,8 +313,28 @@
       <div class="link" onclick="window.open('https://x.com/Dreiji_', '_blank')">
         <div class="title">X</div>
       </div>
+      <button class="link" type="button" data-secret-link>
+        <div>
+          <div class="title">Sekretne wejście</div>
+          <div class="desc">wymaga hasła</div>
+        </div>
+      </button>
     </section>
   </main>
+
+  <div class="modal-backdrop" id="secret-gate" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="secret-title">
+      <h2 id="secret-title">Tajny portal</h2>
+      <p>Podaj hasło, aby przejść do ukrytej strony.</p>
+      <form id="secret-form">
+        <label class="sr-only" for="secret-password">Hasło</label>
+        <input id="secret-password" name="password" type="password" autocomplete="current-password" placeholder="Wpisz hasło" required />
+        <div class="error" id="secret-error"></div>
+        <button type="submit">Wejdź</button>
+      </form>
+      <button type="button" id="secret-close" style="margin-top:6px;">Anuluj</button>
+    </div>
+  </div>
 
   <script>
     const opts = {passive:true};
@@ -290,6 +352,64 @@
       el.addEventListener('mouseleave', clear, opts);
       el.addEventListener('touchend', clear, opts);
       el.addEventListener('touchcancel', clear, opts);
+    });
+
+    const SECRET_PASSWORD = 'przepustka!';
+    const SECRET_FLAG = 'dreiji.secret.access';
+    const setFlag = (key, value)=>{ try { localStorage.setItem(key, value); } catch (e) { /* ignore */ } };
+    const getFlag = key=>{ try { return localStorage.getItem(key); } catch (e) { return null; } };
+    const modal = document.getElementById('secret-gate');
+    const secretLink = document.querySelector('[data-secret-link]');
+    const secretDesc = secretLink?.querySelector('.desc');
+    const form = document.getElementById('secret-form');
+    const passwordInput = document.getElementById('secret-password');
+    const errorBox = document.getElementById('secret-error');
+    const closeBtn = document.getElementById('secret-close');
+
+    const openModal = ()=>{
+      modal.setAttribute('aria-hidden', 'false');
+      passwordInput.value = '';
+      errorBox.textContent = '';
+      setTimeout(()=>passwordInput.focus(), 60);
+    };
+
+    const closeModal = ()=>{
+      modal.setAttribute('aria-hidden', 'true');
+      secretLink.focus();
+    };
+
+    const unlock = ()=>{
+      setFlag(SECRET_FLAG, '1');
+      window.location.href = 'vault.html';
+    };
+
+    const hasAccess = getFlag(SECRET_FLAG) === '1';
+
+    if (hasAccess) {
+      if (secretDesc) secretDesc.textContent = 'masz aktywne wejście';
+      secretLink.addEventListener('click', unlock);
+    } else {
+      secretLink.addEventListener('click', openModal);
+    }
+
+    closeBtn.addEventListener('click', closeModal);
+
+    modal.addEventListener('click', e=>{
+      if (e.target === modal) closeModal();
+    });
+
+    document.addEventListener('keydown', e=>{
+      if (e.key === 'Escape' && modal.getAttribute('aria-hidden') === 'false') closeModal();
+    });
+
+    form.addEventListener('submit', e=>{
+      e.preventDefault();
+      if (passwordInput.value.trim() === SECRET_PASSWORD) {
+        unlock();
+      } else {
+        errorBox.textContent = 'Niepoprawne hasło. Spróbuj ponownie.';
+        passwordInput.focus();
+      }
     });
   </script>
 </body>
