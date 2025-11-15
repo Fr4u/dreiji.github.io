@@ -2,31 +2,54 @@
 (() => {
   'use strict';
   const d = document, p = d.getElementById('p'), btn = d.getElementById('b'), msg = d.getElementById('m');
-  const ITER = 200000, SALT_B64 = "oZ7bzZfZuBNJnr6HsHcdAg==", IV_B64 = "q+7qOFzi73M1vNSN",
-        CT_B64 = "Nufafun4ARmYwiyJUasx/8OjIfumGPf5i4R8O4G5Z97hSaIxd8/7eJYZet4wujhBxs1cN03nkgOazzDueixarVWy9Kmm9WSAXoiBdg==";
+  const ITER = 200000;
+  const ENTRIES = [
+    {
+      salt: "oZ7bzZfZuBNJnr6HsHcdAg==",
+      iv: "q+7qOFzi73M1vNSN",
+      ct: "Nufafun4ARmYwiyJUasx/8OjIfumGPf5i4R8O4G5Z97hSaIxd8/7eJYZet4wujhBxs1cN03nkgOazzDueixarVWy9Kmm9WSAXoiBdg=="
+    },
+    {
+      salt: "AupHUKnBtXCEdIzPllCtqw==",
+      iv: "3Qww8qibH7WPARJE",
+      ct: "t1Y7UItDihbQNcc/zjPCzJ+eRp3NeesNSP6CH/QVd9SS2fY+ygZKm/vfErT8S/H6ITAaz76Bl8avB50="
+    }
+  ];
   const MAX = 5, LOCK_MS = 30000;
   let fails = 0;
   const enc = new TextEncoder(), dec = new TextDecoder();
   const b64dec = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
+  const prepared = ENTRIES.map(({ salt, iv, ct }) => ({
+    salt: b64dec(salt),
+    iv: b64dec(iv),
+    ct: b64dec(ct)
+  }));
+  const TOKEN_KEY = "dreiji.once.token";
+  const PATH_KEY = "dreiji.once.path";
   function ss(k, v) { try { sessionStorage.setItem(k, v) } catch (e) { } }
   function gs(k) { try { return sessionStorage.getItem(k) } catch (e) { return null } }
   function rm(k) { try { sessionStorage.removeItem(k) } catch (e) { } }
+  rm(TOKEN_KEY);
+  rm(PATH_KEY);
   let until = Number(gs("vlt_lock") || 0);
   if (until > Date.now()) msg.textContent = `(${Math.ceil((until - Date.now()) / 1e3)}s)`; else { rm("vlt_lock"); until = 0; }
 
-  async function deriveKey(pass) {
+  async function deriveKey(pass, salt) {
     const baseKey = await crypto.subtle.importKey("raw", enc.encode(pass), { name: "PBKDF2" }, false, ["deriveKey"]);
-    return crypto.subtle.deriveKey({ name: "PBKDF2", hash: "SHA-256", salt: b64dec(SALT_B64), iterations: ITER }, baseKey, { name: "AES-GCM", length: 256 }, false, ["decrypt"]);
+    return crypto.subtle.deriveKey({ name: "PBKDF2", hash: "SHA-256", salt, iterations: ITER }, baseKey, { name: "AES-GCM", length: 256 }, false, ["decrypt"]);
   }
 
   async function tryOpen(pass) {
-    const key = await deriveKey(pass);
-    try {
-      const pt = await crypto.subtle.decrypt({ name: "AES-GCM", iv: b64dec(IV_B64) }, key, b64dec(CT_B64));
-      return dec.decode(pt);
-    } catch (e) {
-      return null;
+    for (const entry of prepared) {
+      try {
+        const key = await deriveKey(pass, entry.salt);
+        const pt = await crypto.subtle.decrypt({ name: "AES-GCM", iv: entry.iv }, key, entry.ct);
+        return dec.decode(pt);
+      } catch (e) {
+        // try next entry
+      }
     }
+    return null;
   }
 
   async function run() {
@@ -35,7 +58,29 @@
     const v = (p.value || "").trim();
     if (!v) { msg.textContent = "Wpisz haslo."; return; }
     const url = await tryOpen(v);
-    if (url) { msg.textContent = ""; rm("vlt_lock"); location.href = url; return; }
+    if (url) {
+      msg.textContent = "";
+      rm("vlt_lock");
+      const target = (() => {
+        try {
+          return new URL(url, location.href);
+        } catch (e) {
+          return new URL(String(url), location.href);
+        }
+      })();
+      try {
+        const tokenBytes = crypto.getRandomValues(new Uint8Array(12));
+        const token = Array.from(tokenBytes, b => b.toString(16).padStart(2, '0')).join('');
+        const cleanPath = target.pathname.replace(/\/+$/, '');
+        ss(TOKEN_KEY, token);
+        ss(PATH_KEY, cleanPath);
+        target.hash = token;
+        location.href = target.href;
+      } catch (e) {
+        location.href = target.href;
+      }
+      return;
+    }
     fails++; p.value = ""; p.focus();
     if (fails >= MAX) { until = Date.now() + LOCK_MS; ss("vlt_lock", String(until)); msg.textContent = "Zbyt wiele prob, odczekaj."; fails = 0; } else { msg.textContent = "Zle haslo."; }
   }
