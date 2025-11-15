@@ -4,6 +4,9 @@
     <title>Życzenia</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
+        html:not([data-secret="ok"]) body {
+            display: none;
+        }
         body {
             background: #0f0f0f;
             color: #e3e3e3;
@@ -32,6 +35,25 @@
             margin-bottom: 18px;
         }
     </style>
+    <script>
+        (() => {
+            const TOKEN_KEY = 'dreiji.once.token';
+            const PATH_KEY = 'dreiji.once.path';
+            try {
+                const token = sessionStorage.getItem(TOKEN_KEY);
+                const expectedPath = sessionStorage.getItem(PATH_KEY);
+                sessionStorage.removeItem(TOKEN_KEY);
+                sessionStorage.removeItem(PATH_KEY);
+                if (!token || !expectedPath) throw new Error('no access');
+                const currentPath = location.pathname.replace(/\/+$/, '');
+                const currentHash = (location.hash || '').replace(/^#/, '');
+                if (expectedPath !== currentPath || token !== currentHash) throw new Error('mismatch');
+                document.documentElement.setAttribute('data-secret', 'ok');
+            } catch (err) {
+                window.location.replace('../');
+            }
+        })();
+    </script>
 </head>
 <body>
     <div class="container">
