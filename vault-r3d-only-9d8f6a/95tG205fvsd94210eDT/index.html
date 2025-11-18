@@ -39,25 +39,32 @@
       box-shadow: 0 4px 14px rgba(0,0,0,.6);
     }
   </style>
-  <script>
+<script>
+    try {
+        sessionStorage.removeItem('dreiji.once.token');
+        sessionStorage.removeItem('dreiji.once.path');
+    } catch (e) {
+
+    }
+
     (() => {
-      const TOKEN_KEY = 'dreiji.once.token';
-      const PATH_KEY = 'dreiji.once.path';
-      try {
-        const token = sessionStorage.getItem(TOKEN_KEY);
-        const expectedPath = sessionStorage.getItem(PATH_KEY);
-        sessionStorage.removeItem(TOKEN_KEY);
-        sessionStorage.removeItem(PATH_KEY);
-        if (!token || !expectedPath) throw new Error('no access');
-        const currentPath = location.pathname.replace(/\/+$/, '');
-        const currentHash = (location.hash || '').replace(/^#/, '');
-        if (expectedPath !== currentPath || token !== currentHash) throw new Error('mismatch');
-        document.documentElement.setAttribute('data-secret', 'ok');
-      } catch (err) {
-        window.location.replace('../');
-      }
+        const TOKEN_KEY = 'dreiji.once.token';
+        const PATH_KEY = 'dreiji.once.path';
+        try {
+            const token = sessionStorage.getItem(TOKEN_KEY);
+            const expectedPath = sessionStorage.getItem(PATH_KEY);
+            sessionStorage.removeItem(TOKEN_KEY);
+            sessionStorage.removeItem(PATH_KEY);
+            if (!token || !expectedPath) throw new Error('no access');
+            const currentPath = location.pathname.replace(/\/+$/, '');
+            const currentHash = (location.hash || '').replace(/^#/, '');
+            if (expectedPath !== currentPath || token !== currentHash) throw new Error('mismatch');
+            document.documentElement.setAttribute('data-secret', 'ok');
+        } catch (err) {
+            window.location.replace('../');
+        }
     })();
-  </script>
+</script>
 </head>
 <body>
   <div class="quote">Noszę ciężar, którego nie nazwę.</div>
