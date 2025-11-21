@@ -37,12 +37,19 @@
     </style>
     
 <script>
+    const clearAccess = () => {
+        try {
+            sessionStorage.removeItem('dreiji.once.token');
+            sessionStorage.removeItem('dreiji.once.path');
+        } catch(e){}
+        document.documentElement.removeAttribute('data-secret');
+    };
+
+    window.addEventListener('pagehide', clearAccess);
+
     window.addEventListener('pageshow', (ev) => {
         if (ev.persisted) {
-            try {
-                sessionStorage.removeItem('dreiji.once.token');
-                sessionStorage.removeItem('dreiji.once.path');
-            } catch(e){}
+            clearAccess();
             location.reload();
         }
     });
@@ -51,16 +58,24 @@
         const TOKEN_KEY = 'dreiji.once.token';
         const PATH_KEY = 'dreiji.once.path';
 
+        const normalizePath = (value) => {
+            const trimmed = (value || '')
+                .replace(/index\.html$/i, '')
+                .replace(/\/+$/, '');
+            return trimmed || '/';
+        };
+
         try {
             const token = sessionStorage.getItem(TOKEN_KEY);
-            const expectedPath = sessionStorage.getItem(PATH_KEY);
+            const rawPath = sessionStorage.getItem(PATH_KEY);
 
-            sessionStorage.removeItem(TOKEN_KEY);
-            sessionStorage.removeItem(PATH_KEY);
+            clearAccess();
 
-            if (!token || !expectedPath) throw new Error('no access');
+            if (!token || !rawPath) throw new Error('no access');
 
-            const currentPath = location.pathname.replace(/\/+$/, '');
+            const expectedPath = normalizePath(rawPath);
+
+            const currentPath = normalizePath(location.pathname);
             const currentHash = (location.hash || '').replace(/^#/, '');
 
             if (expectedPath !== currentPath || token !== currentHash) throw new Error('mismatch');
