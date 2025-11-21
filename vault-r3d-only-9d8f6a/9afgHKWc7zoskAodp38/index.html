@@ -3,10 +3,12 @@
     <meta charset="UTF-8">
     <title>...</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <style>
         html:not([data-secret="ok"]) body {
             display: none;
         }
+
         body {
             background: #0f0f0f;
             color: #e3e3e3;
@@ -34,8 +36,45 @@
         p {
             margin-bottom: 18px;
         }
+
+        #seriousOverlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            backdrop-filter: blur(8px);
+            background: rgba(0,0,0,0.65);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 99999;
+        }
+
+        #seriousBox {
+            background: #1a1a1a;
+            border: 1px solid #444;
+            padding: 28px;
+            width: 320px;
+            text-align: center;
+            font-family: "Georgia", serif;
+            color: #e5e5e5;
+        }
+
+        #seriousBox button {
+            margin: 12px 8px 0 8px;
+            padding: 8px 16px;
+            background: #2a2a2a;
+            border: 1px solid #555;
+            color: #ddd;
+            cursor: pointer;
+        }
+
+        #seriousBox button:hover {
+            background: #333;
+        }
     </style>
-    
+
 <script>
     const clearAccess = () => {
         try {
@@ -53,6 +92,7 @@
             location.reload();
         }
     });
+
     (() => {
         const TOKEN_KEY = 'dreiji.once.token';
         const PATH_KEY = 'dreiji.once.path';
@@ -73,7 +113,6 @@
             if (!token || !rawPath) throw new Error('no access');
 
             const expectedPath = normalizePath(rawPath);
-
             const currentPath = normalizePath(location.pathname);
             const currentHash = (location.hash || '').replace(/^#/, '');
 
@@ -87,7 +126,42 @@
 </script>
 
 </head>
+
 <body>
+
+    <div id="seriousOverlay">
+        <div id="seriousBox">
+            <div id="seriousText">napisalem to na serio</div>
+            <button id="seriousOk">okej</button>
+            <button id="seriousXd">xd?</button>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            let xdCount = 0;
+
+            const overlay = document.getElementById("seriousOverlay");
+            const text = document.getElementById("seriousText");
+            const okBtn = document.getElementById("seriousOk");
+            const xdBtn = document.getElementById("seriousXd");
+
+            okBtn.addEventListener("click", () => {
+                overlay.style.display = "none";
+            });
+
+            xdBtn.addEventListener("click", () => {
+                xdCount++;
+
+                if (xdCount === 1) {
+                    text.textContent = "wiec potraktuj to kurwa na serio";
+                } else if (xdCount === 2) {
+                    window.location.replace("../");
+                }
+            });
+        })();
+    </script>
+
     <div class="container">
         <h1>swieta</h1>
 
@@ -106,5 +180,7 @@
         zeby przypomnial ci, ze nie musisz dzwigac wszystkiego sama<br>
         i ze zaslugujesz na cos dobrego, nawet jesli tego tobie nie pokazalem</p>
     </div>
+
 </body>
 </html>
+
