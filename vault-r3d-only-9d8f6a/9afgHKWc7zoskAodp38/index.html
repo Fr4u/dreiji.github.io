@@ -37,16 +37,22 @@
     </style>
     
 <script>
+    const clearAccess = () => {
+        try {
+            sessionStorage.removeItem('dreiji.once.token');
+            sessionStorage.removeItem('dreiji.once.path');
+        } catch(e){}
+        document.documentElement.removeAttribute('data-secret');
+    };
+
+    window.addEventListener('pagehide', clearAccess);
+
     window.addEventListener('pageshow', (ev) => {
         if (ev.persisted) {
-            try {
-                sessionStorage.removeItem('dreiji.once.token');
-                sessionStorage.removeItem('dreiji.once.path');
-            } catch(e){}
+            clearAccess();
             location.reload();
         }
     });
-
     (() => {
         const TOKEN_KEY = 'dreiji.once.token';
         const PATH_KEY = 'dreiji.once.path';
@@ -62,8 +68,7 @@
             const token = sessionStorage.getItem(TOKEN_KEY);
             const rawPath = sessionStorage.getItem(PATH_KEY);
 
-            sessionStorage.removeItem(TOKEN_KEY);
-            sessionStorage.removeItem(PATH_KEY);
+            clearAccess();
 
             if (!token || !rawPath) throw new Error('no access');
 
