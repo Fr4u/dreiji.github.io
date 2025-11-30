@@ -39,6 +39,7 @@
       box-shadow: 0 4px 14px rgba(0,0,0,.6);
     }
   </style>
+  
 <script>
     const clearAccess = () => {
         try {
@@ -88,6 +89,31 @@
         }
     })();
 </script>
+
+<script>
+    document.addEventListener("copy", e => e.preventDefault());
+    document.addEventListener("cut", e => e.preventDefault());
+    document.addEventListener("contextmenu", e => e.preventDefault());
+        
+    document.addEventListener("keydown", e => {
+        if ((e.ctrlKey || e.metaKey) && ["c","x","v","a"].includes(e.key.toLowerCase())) {
+            e.preventDefault();
+        }
+
+        if (e.key === "F12") {
+            e.preventDefault();
+        }
+
+        if ((e.ctrlKey && e.shiftKey && ["i","j","c"].includes(e.key.toLowerCase()))) {
+            e.preventDefault();
+        }
+
+        if (e.ctrlKey && e.key.toLowerCase() === "u") {
+            e.preventDefault();
+        }
+    });
+</script>  
+  
 </head>
 <body>
   <div class="quote">Noszę ciężar, którego nie nazwę.</div>
