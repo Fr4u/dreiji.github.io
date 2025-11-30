@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>...</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        html:not([data-secret="ok"]) body { display: none; }
+        body {
+            background: #0f0f0f;
+            color: #e3e3e3;
+            font-family: "Georgia", serif;
+            padding: 40px 20px;
+            max-width: 680px;
+            margin: 0 auto;
+            line-height: 1.7;
+            font-size: 18px;
+        }
+
+        .container {
+            background: #151515;
+            padding: 32px;
+            border: 1px solid #2a2a2a;
+        }
+
+        h1 {
+            font-size: 36px;
+            margin-bottom: 20px;
+            font-weight: bold;
+            color: #d7d7d7;
+        }
+
+        p {
+            margin-bottom: 18px;
+        }
+    </style>
+    <script>
+        const clearAccess = () => {
+            try {
+                sessionStorage.removeItem('dreiji.once.token');
+                sessionStorage.removeItem('dreiji.once.path');
+            } catch (e) {}
+            document.documentElement.removeAttribute('data-secret');
+        };
+
+        window.addEventListener('pagehide', clearAccess);
+
+        window.addEventListener('pageshow', (ev) => {
+            if (ev.persisted) {
+                clearAccess();
+                location.reload();
+            }
+        });
+
+        (() => {
+            const TOKEN_KEY = 'dreiji.once.token';
+            const PATH_KEY = 'dreiji.once.path';
+
+            const normalizePath = (value) => {
+                const trimmed = (value || '')
+                    .replace(/index\.html$/i, '')
+                    .replace(/\/+$/, '');
+                return trimmed || '/';
+            };
+
+            try {
+                const token = sessionStorage.getItem(TOKEN_KEY);
+                const rawPath = sessionStorage.getItem(PATH_KEY);
+
+                clearAccess();
+
+                if (!token || !rawPath) throw new Error('no access');
+
+                const expectedPath = normalizePath(rawPath);
+                const currentPath = normalizePath(location.pathname);
+                const currentHash = (location.hash || '').replace(/^#/, '');
+
+                if (expectedPath !== currentPath || token !== currentHash) throw new Error('mismatch');
+
+                document.documentElement.setAttribute('data-secret', 'ok');
+            } catch (err) {
+                window.location.replace('../');
+            }
+        })();
+    </script>
+
+    <script>
+        document.addEventListener("copy", e => e.preventDefault());
+        document.addEventListener("cut", e => e.preventDefault());
+        document.addEventListener("contextmenu", e => e.preventDefault());
+        document.addEventListener("keydown", e => {
+            if ((e.ctrlKey || e.metaKey) && ["c", "x", "v", "a"].includes(e.key.toLowerCase())) {
+                e.preventDefault();
+            }
+            if (e.key === "F12") {
+                e.preventDefault();
+            }
+            if ((e.ctrlKey && e.shiftKey && ["i", "j", "c"].includes(e.key.toLowerCase()))) {
+                e.preventDefault();
+            }
+            if (e.ctrlKey && e.key.toLowerCase() === "u") {
+                e.preventDefault();
+            }
+        });
+    </script>
+</head>
+
+<body>
+
+    <div class="container">
+        <h1>Iluzja</h1>
+
+        <p>Są ludzie, którzy wołają na rozmowę tylko po to, żeby odpalić swoje ostatnie kazanie. Te wszystkie "porozmawiajmy", "wyjaśnijmy", "powiedz coś" są tylko zasłoną dymną. Od pierwszej sekundy mają gotowy wyrok. Trzymają go w kieszeni jak nóż, którym planują zakończyć tę farsę.<br>
+        I nie ma znaczenia, co powiesz.<br>
+        Wszystko już dawno ustalili.</p>
+
+        <p>W takich chwilach lecą ich gładkie formułki, niby mądre, niby troskliwe. Brzmią jak diagnozy, a śmierdzą pogardą. Każde słowo ma cię docisnąć do ziemi, każde ma utwierdzić ich w przekonaniu, że to oni są ci "czyści", a ty jesteś brudem, który trzeba zmyć z historii.</p>
+
+        <p>Tylko że to nie jest troska.<br>
+        To nie jest żadna chęć naprawy.<br>
+        To nie jest rozmowa.</p>
+
+        <p>To jest spektakl sumienia, który odgrywają, żeby nie poczuć własnego smrodu. Żeby łatwiej im było odejść. Żeby mogli później powiedzieć: "zrobiliśmy, co mogliśmy", chociaż tak naprawdę przyszli tylko po to, żeby dopchnąć cię do ściany. Zrobić z ciebie kozła ofiarnego, dzięki któremu mogą żyć spokojniej.</p>
+
+        <p>I jasne, druga strona też ma swoje winy. Kłamstwa. Manipulacje. Brud zbierany miesiącami. Chaos, który doprowadza człowieka do momentu, że sam by siebie zajebał, gdyby miał trochę mniej strachu.</p>
+
+        <p>Ale jest coś, czego oni nie zrozumieją.<br>
+        Błędy nie znikają od gadania.<br>
+        Kłamstwa nie były niewinne.<br>
+        Manipulacje nie były zabawą.<br>
+        To były sposoby przetrwania.</p>
+
+        <p>Ostatnie deski ratunku w człowieku, który tonie.</p>
+
+        <p>Jedni krzyczą, drudzy kłamią. Jedni błagają, drudzy brudzą wszystko wokół, bo nie potrafią inaczej. Gdy człowiek jest zepchnięty do ściany latami chaosu, wybory przestają być wyborem.<br>
+        Stają się instynktem<br>
+        Brzydkim, żałosnym, popierdolonym.</p>
+
+        <p>Ludzie nie robią tego brudu tylko dlatego, że toną. Czasem robią go, bo nie potrafią inaczej.<br>
+        Bo nie chcą inaczej.<br>
+        Wygodniej jest dorzucić jeden kłamliwy ruch niż stanąć nago wobec własnej prawdy.<br>
+        Instynkt wyjaśnia, ale nie uniewinnia.</p>
+
+        <p>I prawdziwy człowiek to widzi.<br>
+        Patrzy głębiej.<br>
+        Nie w czyn, tylko w ranę.<br>
+        Nie w brud, tylko w to, skąd wyrósł.<br>
+        Dotyka bólu, nawet jeśli parzy.<br>
+        Bo wie, że nikt nie rodzi się potworem.<br>
+        Potworem człowiek dopiero zostaje, najczęściej wtedy, kiedy już nie ma siły na nic innego.</p>
+
+        <p>Prawdziwy przyjaciel nie odpala furii, kiedy widzi czyjś upadek.<br>
+        Nie pierdoli moralnych wykładów.<br>
+        Nie stawia się ponad tobą.<br>
+        Pyta, czy jeszcze masz siłę mówić.<br>
+        Pyta, czy to prawda, czy strach.</p>
+
+        <p>Przede wszystkim myśli, zanim cokolwiek powie.<br>
+        Oddycha, zanim oceni.<br>
+        Wie, że emocje potrafią rozpierdolić wszystko, co jeszcze stoi.<br>
+        I nie chce być kolejnym gwoździem do trumny.</p>
+
+        <p>Prawdziwy przyjaciel widzi brud.<br>
+        Ale nie ucieka.<br>
+        Widzi pęknięcia.<br>
+        Ale nie chowa rąk za plecy.<br>
+        Widzi człowieka.<br>
+        Nie problem.<br>
+        Nie zadanie do rozwiązania.</p>
+
+        <p>Daje przestrzeń.<br>
+        Na błąd.<br>
+        Na ciszę.<br>
+        Na zawahanie.<br>
+        Na spóźnione przyznanie się.<br>
+        Na pęknięcie, które przychodzi wtedy, kiedy najmniej trzeba.<br>
+        Bo wie, że człowiek czasem jest tylko kupą mięsa próbującą nie rozpaść się na kawałki.</p>
+
+        <p>Fałszywi idą skrótem.<br>
+        Wybierają łatwe etykiety, bo nie chcą widzieć więcej.<br>
+        Kłamstwo.<br>
+        Manipulacja.<br>
+        Słabość.<br>
+        Tyle im wystarcza.<br>
+        Ból ich nie interesuje.<br>
+        Źródło ich nie interesuje.<br>
+        Ty ich nie interesujesz.</p>
+
+        <p>A potem spuszczają swoje standardowe hasła, każde tak samo zimne, tak samo oderwane od życia. Wszystko brzmi niby rozsądnie, niby troskliwie, a wchodzi jak metalowy pręt między żebra.</p>
+
+        <p>Bo to nie jest żadna rozmowa.<br>
+        To jest egzekucja w eleganckim opakowaniu.</p>
+
+        <p>I w końcu pada to jedno zdanie, tak przewidywalne, że aż śmieszne w swojej bezczelności:</p>
+        
+        <p>to i tak nic nie zmieni.</p>
+
+        <p>I wtedy wszystko się staje kurwa jasne.<br>
+        Rozmowa była martwa od początku.<br>
+        Wyrok zapadł wcześniej.<br>
+        Cały ten teatr był tylko po to, żeby rozłożyć winę tak, żeby im było wygodnie.</p>
+
+        <p>Takie "rozmowy" nie ratują niczego.<br>
+        Nigdy nie miały ratować.<br>
+        To tylko sposób, żeby ktoś mógł odejść lżejszy.<br>
+        A cały syf zostawić na barkach jednej osoby.<br>
+        Zawsze tej samej.</p>
+
+        <p>Dlatego z fałszywymi przyjaciółmi nie ma powrotów.<br>
+        Nie dlatego, że są źli.<br>
+        Bo nie są.<br>
+        Nigdy nie mieli odwagi zobaczyć cię naprawdę, nawet jak bardzo im to utrudniono.<br>
+        Z brudem.<br>
+        Z raną.<br>
+        Z bólem, którego nie da się nazwać jednym zdaniem.<br>
+        Z człowiekiem, którego nie da się wcisnąć w ich czyste, plastikowe ramki.</p>
+
+        <p>Bo większość z nich nie znosi widoku ran.<br>
+        Boją się brudu, bo wiedzą, że sami noszą go pod paznokciami.<br>
+        Dlatego wybierają rolę sędziego.<br>
+        To łatwiejsze.</p>
+
+        <p>A potem zostaje tylko cisza.<br>
+        Ciężka, gęsta, wypełniona resztkami słów, które udawały troskę, a były tylko narzędziem. Cisza po wyroku przebranym za rozmowę. Cisza, która wchodzi pod skórę jak zimny nóż i nie zostawia miejsca na nic prócz tego, co surowe i nieprzyjemne, jak skurwysyńskie echo.</p>
+
+        <p>W tej ciszy pojawia się zdanie, które nie potrzebuje zaproszenia.<br>
+        Memento mori.</p>
+
+        <p>Bo wszystko i tak się skończy.<br>
+        Wszystkie relacje, wszystkie słowa, wszystkie role, które ludzie grają przed sobą nawzajem.<br>
+        Cały ten moralny teatr, te gładkie miny, te gesty przeciekające sztucznością. Wszystko zgaśnie, jakby nigdy nie było ważne. Bo w gruncie rzeczy nigdy nie było kurwa żadnego sensu.</p>
+
+        <p>Świat działa według prostego, brutalnego prawa.<br>
+        Ludzie przychodzą.<br>
+        Ludzie odchodzą.</p>
+
+        <p>Jedni wpadają jak huragan i znikają, zostawiając za sobą szkło pod stopami.<br>
+        Inni stoją blisko, jakby mieli zostać na dłużej, ale oczy już mają skierowane w inną stronę.<br>
+        Jeszcze inni udają obecność, której nie są w stanie unieść.<br>
+        Wszyscy jednak wcześniej czy później odchodzą, jak pociąg, który nigdy nie czeka na spóźnionych.</p>
+
+        <p>W tej prawdzie nie ma goryczy. Jest tylko trzeźwość.<br>
+        Ludzie zjawiają się na moment.<br>
+        Na swoją wygodę.<br>
+        Na swój lęk.<br>
+        Na swoje potrzeby.<br>
+        Nigdy nie na wieczność.</p>
+
+        <p>Całe to krążenie wokół winy, wyroków, racji i pozornych analiz nie znaczy nic wobec końca, który prędzej czy później przyjdzie po każdego.<br>
+        Żadne słowo z tych eleganckich egzekucji nie przetrwa.<br>
+        Żaden osąd nie zostanie odnotowany.<br>
+        Żaden moralny gest nie będzie miał znaczenia w chwili, gdy wszystko stanie w miejscu.</p>
+
+        <p>Memento mori nie daje ulgi.<br>
+        Daje ostrość.<br>
+        Zmusza, by zobaczyć czas takim, jaki jest: materiałem, którego nikt nie zwróci, którego nikt nie odda, którego nikt nie przedłuży dla czyjejś wygody.</p>
+
+        <p>I z tej ostrości rodzi się mur.<br>
+        Zbudowany z popękanych cegieł, z resztek sił, z chłodnej świadomości, że drugi raz nikt nie ma prawa wejść za głęboko z wyrokami ukrytymi pod płaszczykiem troski, ani z jednym pierdolonym słowem oceny więcej.</p>
+        
+        <p>Bo tak wygląda świat.<br>
+        Każde imię kiedyś znika.<br>
+        Każde echo się urywa.</p>
+
+        <p>A na koniec zostają tylko rzeczy, które nie uciekają.<br>
+        Brud, który nie kłamie.<br>
+        Pęknięcia, które nie udają niczego.<br>
+        Prawda, która nie potrzebuje słów.</p>
+
+        <p>Reszta przechodzi przez życie jak jebany wiatr w pustym korytarzu.<br>
+        Bez zamiaru.<br>
+        Bez powrotu.<br>
+        Bez śladu.</p>
+
+    </div>
+
+</body>
+</html>
