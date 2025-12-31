@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>...</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        html:not([data-secret="ok"]) body { display: none; }
+        body {
+            background: #0f0f0f;
+            color: #e3e3e3;
+            font-family: "Georgia", serif;
+            padding: 40px 20px;
+            max-width: 680px;
+            margin: 0 auto;
+            line-height: 1.7;
+            font-size: 18px;
+        }
+
+        .container {
+            background: #151515;
+            padding: 32px;
+            border: 1px solid #2a2a2a;
+        }
+
+        h1 {
+            font-size: 36px;
+            margin-bottom: 20px;
+            font-weight: bold;
+            color: #d7d7d7;
+        }
+
+        p {
+            margin-bottom: 18px;
+        }
+    </style>
+
+    <script>
+        const clearAccess = () => {
+            try {
+                sessionStorage.removeItem('dreiji.once.token');
+                sessionStorage.removeItem('dreiji.once.path');
+            } catch (e) {}
+            document.documentElement.removeAttribute('data-secret');
+        };
+
+        window.addEventListener('pagehide', clearAccess);
+
+        window.addEventListener('pageshow', (ev) => {
+            if (ev.persisted) {
+                clearAccess();
+                location.reload();
+            }
+        });
+
+        (() => {
+            const TOKEN_KEY = 'dreiji.once.token';
+            const PATH_KEY = 'dreiji.once.path';
+
+            const normalizePath = (value) => {
+                const trimmed = (value || '')
+                    .replace(/index\.html$/i, '')
+                    .replace(/\/+$/, '');
+                return trimmed || '/';
+            };
+
+            try {
+                const token = sessionStorage.getItem(TOKEN_KEY);
+                const rawPath = sessionStorage.getItem(PATH_KEY);
+
+                clearAccess();
+
+                if (!token || !rawPath) throw new Error('no access');
+
+                const expectedPath = normalizePath(rawPath);
+                const currentPath = normalizePath(location.pathname);
+                const currentHash = (location.hash || '').replace(/^#/, '');
+
+                if (expectedPath !== currentPath || token !== currentHash) throw new Error('mismatch');
+
+                document.documentElement.setAttribute('data-secret', 'ok');
+            } catch (err) {
+                window.location.replace('../');
+            }
+        })();
+    </script>
+
+    <script>
+        document.addEventListener("copy", e => e.preventDefault());
+        document.addEventListener("cut", e => e.preventDefault());
+        document.addEventListener("contextmenu", e => e.preventDefault());
+        document.addEventListener("keydown", e => {
+            if ((e.ctrlKey || e.metaKey) && ["c", "x", "v", "a"].includes(e.key.toLowerCase())) {
+                e.preventDefault();
+            }
+            if (e.key === "F12") {
+                e.preventDefault();
+            }
+            if ((e.ctrlKey && e.shiftKey && ["i", "j", "c"].includes(e.key.toLowerCase()))) {
+                e.preventDefault();
+            }
+            if (e.ctrlKey && e.key.toLowerCase() === "u") {
+                e.preventDefault();
+            }
+        });
+    </script>
+
+</head>
+
+<body>
+
+    <div class="container">
+        <h1>Nowy Rok</h1>
+
+        <p>Żeby czas wreszcie był po Twojej stronie, nie mojej.<br>
+        Żebyś przeszła przez ten rok bez kolejnych blizn.<br>
+        Żeby to przestało Cię ranić.<br>
+        Żeby ten rok nie musiał Cię uczyć odporności.<br>
+        Żeby ból po mnie nie był już Twoim tłem.<br>
+        Żebyś nie niosła mnie dalej w sobie.<br>
+        Żeby ten rok nie pamiętał tego, co ja zepsułem.<br>
+        Żeby to straciło nad Tobą władzę.<br>
+        Żebyś oddychała bez ciężaru moich błędów.<br>
+        Żeby ten rok był cichszy od wszystkich poprzednich zdarzeń.<br>
+        Żebyś nie musiała już niczego po mnie sklejać.<br>
+        Żeby to, co zabrałem, nie bolało każdego dnia.<br>
+        Żebyś była cała. Tam, gdzie ja coś złamałem.<br>
+        Żeby nowy rok nie przypominał starej rany.<br>
+        Żebyś mogła żyć, nie reagując na mój cień.<br>
+        Żeby czas zamknął to, czego ja nie potrafie.<br>
+        Żeby ten rok nie był karą za złe decyzje.<br>
+        Żebyś wreszcie była poza zasięgiem mojej winy.<br>
+        Żeby ten rok po prostu bolał mniej.</p>
+    </div>
+
+</body>
+</html>
