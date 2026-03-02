@@ -5,155 +5,353 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>THE_DEVIL</title>
   <link rel="icon" href="w.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet" />
   <style>
-    :root{
-      --w: min(560px, 92vw);
-      --w-links: min(430px, 88vw);
-      --font: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-      --font-code: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, Liberation Mono, monospace;
-      --fg:#e9ebef;
-      --muted:#9aa0aa;
-      --card:#1a1d23;
-      --card-hover:#22262e;
-      --stroke:#343944;
-      --radius: 16px;
+    :root {
+      --w: min(620px, 92vw);
+      --w-links: min(480px, 88vw);
+      --font: "Space Grotesk", "Segoe UI", sans-serif;
+      --font-code: "JetBrains Mono", Consolas, monospace;
+      --fg: #eef3fb;
+      --muted: #9aa8bc;
+      --card: rgba(12, 21, 33, 0.82);
+      --card-hover: rgba(18, 29, 44, 0.92);
+      --stroke: rgba(125, 179, 255, 0.16);
+      --accent: #8ce8ff;
+      --accent-2: #8b78ff;
+      --shadow: 0 22px 52px rgba(0, 0, 0, 0.34);
       --rx: 0deg;
       --ry: 0deg;
       --warp: 0px;
-      margin:0;
-      color:var(--fg);
-      font:16px/1.5 var(--font);
-      min-height:100%;
-      display:grid;
-      place-items:center;
-      overflow:hidden;
-      background:#0f1115;
-      opacity:0;
-      animation:fadeIn .6s ease forwards;
     }
 
-    .bg{
-      position:fixed;
-      inset:0;
-      z-index:0;
-      pointer-events:none;
+    * {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      min-height: 100%;
+    }
+
+    body {
+      margin: 0;
+      color: var(--fg);
+      font: 16px/1.5 var(--font);
+      display: grid;
+      place-items: center;
+      overflow-x: hidden;
+      background: #06111b;
+      opacity: 0;
+      animation: fadeIn 0.7s ease forwards;
+    }
+
+    .bg {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
       background:
-        radial-gradient(65% 50% at 50% -10%, rgba(255,255,255,.06), transparent 60%),
-        radial-gradient(90% 60% at 20% 100%, rgba(255,255,255,.04), transparent 68%),
-        linear-gradient(180deg, #171a20, #0f1115 64%, #0b0d11);
+        radial-gradient(60% 70% at 12% 14%, rgba(140, 232, 255, 0.16), transparent 62%),
+        radial-gradient(55% 55% at 88% 18%, rgba(139, 120, 255, 0.18), transparent 58%),
+        radial-gradient(85% 75% at 50% 110%, rgba(52, 126, 255, 0.13), transparent 65%),
+        linear-gradient(180deg, #0d1724, #08121b 52%, #050b11);
     }
 
-    .warp{
-      position:fixed;
-      inset:-20%;
-      pointer-events:none;
-      z-index:1;
-      background: radial-gradient(200px 200px at var(--cx,50%) var(--cy,50%), rgba(255,255,255,.08), transparent 70%);
-      filter: blur(22px);
-      transform: translate3d(calc(var(--warp) * .08), calc(var(--warp) * -.05), 0) scale(1.04);
-      transition: opacity .2s ease;
-      opacity:.35;
+    .bg::before,
+    .bg::after {
+      content: "";
+      position: absolute;
+      inset: 0;
     }
-    #cursorFx{
-      position:fixed;
-      inset:0;
-      width:100%;
-      height:100%;
-      pointer-events:none;
-      z-index:2;
-      opacity:.9;
-      mix-blend-mode:screen;
+
+    .bg::before {
+      background:
+        linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+      background-size: 42px 42px;
+      mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.6), transparent 88%);
+      opacity: 0.28;
     }
-      #cursorFx{
-      position:fixed;
-      inset:0;
-      width:100%;
-      height:100%;
-      pointer-events:none;
-      z-index:2;
-      opacity:.9;
-      mix-blend-mode:screen;
+
+    .bg::after {
+      background:
+        linear-gradient(180deg, rgba(6, 17, 27, 0.14), rgba(6, 17, 27, 0.82)),
+        url("background.png") center top / cover no-repeat;
+      opacity: 0.24;
+      mix-blend-mode: screen;
     }
-    .wrap{
-      width:var(--w);
-      padding:24px 16px 54px;
-      position:relative;
-      z-index:3;
+
+    .warp {
+      position: fixed;
+      inset: -20%;
+      pointer-events: none;
+      z-index: 1;
+      background: radial-gradient(220px 220px at var(--cx, 50%) var(--cy, 50%), rgba(140, 232, 255, 0.14), transparent 72%);
+      filter: blur(26px);
+      transform: translate3d(calc(var(--warp) * 0.08), calc(var(--warp) * -0.05), 0) scale(1.04);
+      transition: opacity 0.2s ease;
+      opacity: 0.46;
+    }
+
+    #cursorFx {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 2;
+      opacity: 0.72;
+      mix-blend-mode: screen;
+    }
+
+    .wrap {
+      width: var(--w);
+      padding: 28px 16px 58px;
+      position: relative;
+      z-index: 3;
       transform: perspective(900px) rotateX(var(--rx)) rotateY(var(--ry));
-      transition: transform .18s ease-out, filter .18s ease-out;
-      filter: saturate(1);
+      transition: transform 0.18s ease-out, filter 0.18s ease-out;
+      filter: saturate(1.02);
     }
 
-    body.is-hovering .wrap{ filter: saturate(1.08) contrast(1.03); }
-
-    header.profile{
-      display:flex;
-      gap:14px;
-      align-items:center;
-      padding:16px;
-      border-radius: var(--radius);
-      background: var(--card);
-      border:1px solid var(--stroke);
-      box-shadow: 0 8px 25px rgba(0,0,0,.35);
+    body.is-hovering .wrap {
+      filter: saturate(1.1) contrast(1.05);
     }
 
-    .pfp{
-      width:72px;
-      height:72px;
-      border-radius:50%;
-      object-fit:cover;
-      border:1px solid var(--stroke);
+    .profile {
+      position: relative;
+      display: flex;
+      gap: 18px;
+      align-items: center;
+      padding: 22px;
+      border-radius: 24px;
+      background:
+        linear-gradient(135deg, rgba(140, 232, 255, 0.08), transparent 36%),
+        linear-gradient(160deg, rgba(139, 120, 255, 0.12), transparent 55%),
+        var(--card);
+      border: 1px solid var(--stroke);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      backdrop-filter: blur(10px);
     }
-    .name{margin:0; font-size:clamp(22px,3.4vw,28px); letter-spacing:.2px; color:#f2f3f5}
-    .bio{margin:4px 0 0; color:var(--muted)}
-    .links{ width: var(--w-links); margin: 16px auto 0; display:grid; gap:10px; }
 
-    .link{
-      position:relative;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      text-align:center;
-      padding:16px;
-      min-height:58px;
-      color:inherit;
-      text-decoration:none;
-      cursor:pointer;
-      background: var(--card);
-      border:1px solid var(--stroke);
-      border-radius: 14px;
-      box-shadow: 0 7px 18px rgba(0,0,0,.25);
-      transition: transform .2s ease, background .25s ease, border-color .25s ease;
-      overflow:hidden;
+    .profile::after {
+      content: "";
+      position: absolute;
+      inset: auto -12% -46% auto;
+      width: 240px;
+      height: 240px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(140, 232, 255, 0.12), transparent 64%);
+    }
+
+    .pfp {
+      width: 86px;
+      height: 86px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      box-shadow:
+        0 0 0 8px rgba(255, 255, 255, 0.03),
+        0 16px 36px rgba(0, 0, 0, 0.34);
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .pfp:hover,
+    .pfp:focus-visible {
+      transform: translateY(-1px) scale(1.02);
+      box-shadow:
+        0 0 0 8px rgba(255, 255, 255, 0.04),
+        0 18px 42px rgba(0, 0, 0, 0.4);
+      outline: none;
+    }
+
+    .meta {
+      position: relative;
+      z-index: 1;
+      flex: 1;
+    }
+
+    .eyebrow {
+      margin: 0 0 6px;
+      color: var(--accent);
+      font: 600 11px/1.2 var(--font-code);
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+    }
+
+    .name {
+      margin: 0;
+      font-size: clamp(28px, 4vw, 38px);
+      line-height: 1;
+      letter-spacing: -0.03em;
+      color: #f8fbff;
+    }
+
+    .bio {
+      margin: 8px 0 0;
+      max-width: 36ch;
+      color: var(--muted);
+    }
+
+    .links {
+      width: var(--w-links);
+      margin: 18px auto 0;
+      display: grid;
+      gap: 12px;
+    }
+
+    .link {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      text-align: left;
+      padding: 18px 20px;
+      min-height: 68px;
+      color: inherit;
+      text-decoration: none;
+      background:
+        linear-gradient(135deg, rgba(255, 255, 255, 0.03), transparent 42%),
+        var(--card);
+      border: 1px solid var(--stroke);
+      border-radius: 18px;
+      box-shadow: 0 10px 22px rgba(0, 0, 0, 0.2);
+      transition: transform 0.2s ease, background 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+      overflow: hidden;
+      backdrop-filter: blur(10px);
+    }
+
+    .link::before {
+      content: "";
+      position: absolute;
+      inset: 0 auto 0 0;
+      width: 4px;
+      border-radius: 18px 0 0 18px;
+      background: linear-gradient(180deg, var(--accent), var(--accent-2));
+      opacity: 0.9;
+    }
+
+    .link::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background: radial-gradient(260px 110px at var(--mx, 50%) var(--my, 50%), rgba(140, 232, 255, 0.14), transparent 70%);
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
+
+    .link:hover {
+      transform: translateY(-2px) scale(1.01);
+      background: var(--card-hover);
+      border-color: rgba(140, 232, 255, 0.26);
+      box-shadow: 0 18px 34px rgba(0, 0, 0, 0.28);
+    }
+
+    .link:hover::after,
+    .link:focus-visible::after {
+      opacity: 1;
+    }
+
+    .link:focus-visible {
+      outline: none;
+      border-color: rgba(140, 232, 255, 0.34);
+      box-shadow: 0 0 0 3px rgba(140, 232, 255, 0.12), 0 18px 34px rgba(0, 0, 0, 0.28);
+    }
+
+    .text,
+    .arrow {
+      position: relative;
+      z-index: 1;
+    }
+
+    .title {
+      font: 700 18px/1.1 var(--font-code);
+      letter-spacing: -0.02em;
+      color: #f8fbff;
+    }
+
+    .desc {
+      margin-top: 5px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .arrow {
+      color: var(--accent);
+      font: 600 18px/1 var(--font-code);
+      opacity: 0.9;
+      transform: translateX(0);
+      transition: transform 0.2s ease, opacity 0.2s ease;
+    }
+
+    .link:hover .arrow,
+    .link:focus-visible .arrow {
+      transform: translateX(4px);
+      opacity: 1;
+    }
+
+    @keyframes fadeIn {
+      to {
+        opacity: 1;
+      }
+    }
+
+    @media (max-width: 600px) {
+      :root {
+        --w: 96vw;
+        --w-links: 96vw;
       }
 
-    .link::after{
-      content:"";
-      position:absolute;
-      inset:0;
-      pointer-events:none;
-      background: radial-gradient(220px 100px at var(--mx,50%) var(--my,50%), rgba(255,255,255,.11), transparent 70%);
-      opacity:0;
-      transition:opacity .2s ease;
-    }
+      body {
+        place-items: start center;
+      }
 
-    .link:hover{
-      transform: translateY(-1px) scale(1.006);
-      background: var(--card-hover);
-      border-color:#4a5160;
-    }
-    .link:hover::after{ opacity:1 }
-    .title{font:650 20px/1 var(--font-code); letter-spacing:.1px}
-    .desc {font-size:12px; color:var(--muted); margin-top:4px}
-    @keyframes fadeIn{ to{ opacity:1 } }
-    @media (max-width: 600px){
-      :root{ --w:96vw; --w-links:96vw; --radius:14px; }
-      .wrap{ padding:16px 10px 34px; transform:none !important; }
-      header.profile{ padding:14px; }
-      .pfp{ width:62px; height:62px; }
-      .link{ min-height:50px; padding:14px; }
-      #cursorFx{ display:none; }
-      .warp{ opacity:.2; }
+      .wrap {
+        padding: 18px 10px 34px;
+        transform: none !important;
+      }
+
+      .profile {
+        padding: 18px;
+        gap: 14px;
+        align-items: flex-start;
+      }
+
+      .pfp {
+        width: 70px;
+        height: 70px;
+      }
+
+      .name {
+        font-size: clamp(24px, 8vw, 32px);
+      }
+
+      .bio {
+        max-width: none;
+      }
+
+      .link {
+        min-height: 58px;
+        padding: 16px 18px;
+      }
+
+      #cursorFx {
+        display: none;
+      }
+
+      .warp {
+        opacity: 0.24;
+      }
+
+      .bg::after {
+        background-position: center;
+      }
     }
   </style>
 </head>
@@ -164,99 +362,146 @@
 
   <main class="wrap">
     <header class="profile">
-      <img class="pfp" src="avatar.png" alt="avatar" tabindex="0"
-           onclick="location.href='/vault-r3d-only-9d8f6a/'"
-           onkeydown="if(event.key==='Enter') location.href='/vault-r3d-only-9d8f6a/'">
+      <img
+        class="pfp"
+        src="avatar.png"
+        alt="avatar"
+        tabindex="0"
+        onclick="location.href='/vault-r3d-only-9d8f6a/'"
+        onkeydown="if(event.key==='Enter') location.href='/vault-r3d-only-9d8f6a/'"
+      />
       <div class="meta">
+        <p class="eyebrow">dreiji.pl</p>
         <h1 class="name">dreiji</h1>
-        <p class="bio">piszę za dużo i śpię za mało</p>
+        <p class="bio">pisze za duzo i spie za malo</p>
       </div>
     </header>
 
     <section class="links" id="links">
-      <div class="link" onclick="window.open('https://www.instagram.com/dreiji_/', '_blank')">
-        <div class="title">Instagram</div>
-      </div>
-      <div class="link" onclick="window.open('https://www.youtube.com/@dreijiwtf', '_blank')">
-        <div class="title">YouTube</div>
-      </div>
-      <div class="link" onclick="window.open('https://open.spotify.com/user/q4qar66nrdz396d67bpfbv952', '_blank')">
-        <div class="title">Spotify</div>
-      </div>
-      <div class="link" onclick="window.open('https://discord.com/users/278065747199131650', '_blank')">
-        <div class="title">Discord</div>
-      </div>
-      <div class="link" onclick="window.open('https://twitch.tv/dreiji', '_blank')">
-        <div>
+      <a class="link" href="https://www.instagram.com/dreiji_/" target="_blank" rel="noreferrer">
+        <div class="text">
+          <div class="title">Instagram</div>
+          <div class="desc">zdjecia, stories, update'y</div>
+        </div>
+        <div class="arrow" aria-hidden="true">-&gt;</div>
+      </a>
+
+      <a class="link" href="https://www.youtube.com/@dreijiwtf" target="_blank" rel="noreferrer">
+        <div class="text">
+          <div class="title">YouTube</div>
+          <div class="desc">video i random uploady</div>
+        </div>
+        <div class="arrow" aria-hidden="true">-&gt;</div>
+      </a>
+
+      <a class="link" href="https://open.spotify.com/user/q4qar66nrdz396d67bpfbv952" target="_blank" rel="noreferrer">
+        <div class="text">
+          <div class="title">Spotify</div>
+          <div class="desc">playlisty i muzyka</div>
+        </div>
+        <div class="arrow" aria-hidden="true">-&gt;</div>
+      </a>
+
+      <a class="link" href="https://discord.com/users/278065747199131650" target="_blank" rel="noreferrer">
+        <div class="text">
+          <div class="title">Discord</div>
+          <div class="desc">kontakt i ping</div>
+        </div>
+        <div class="arrow" aria-hidden="true">-&gt;</div>
+      </a>
+
+      <a class="link" href="https://twitch.tv/dreiji" target="_blank" rel="noreferrer">
+        <div class="text">
           <div class="title">Twitch</div>
           <div class="desc">live czasem</div>
         </div>
-      </div>
-      <div class="link" onclick="window.open('https://mail.google.com/mail/?view=cm&fs=1&to=kontakt@dreiji.pl', '_blank')">
-        <div class="title">Mail</div>
-      </div>
-      <div class="link" onclick="window.open('https://x.com/Dreiji_', '_blank')">
-        <div class="title">X</div>
-      </div>
+        <div class="arrow" aria-hidden="true">-&gt;</div>
+      </a>
+
+      <a class="link" href="https://mail.google.com/mail/?view=cm&fs=1&to=kontakt@dreiji.pl" target="_blank" rel="noreferrer">
+        <div class="text">
+          <div class="title">Mail</div>
+          <div class="desc">kontakt@dreiji.pl</div>
+        </div>
+        <div class="arrow" aria-hidden="true">-&gt;</div>
+      </a>
+
+      <a class="link" href="https://x.com/Dreiji_" target="_blank" rel="noreferrer">
+        <div class="text">
+          <div class="title">X</div>
+          <div class="desc">krotkie mysli i linki</div>
+        </div>
+        <div class="arrow" aria-hidden="true">-&gt;</div>
+      </a>
     </section>
   </main>
 
   <script>
     const opts = { passive: true };
-    const links = document.querySelectorAll('.link');
-    links.forEach(el => {
-      const move = e => {
+    const links = document.querySelectorAll(".link");
+
+    links.forEach((el) => {
+      const move = (e) => {
         const t = e.touches ? e.touches[0] : e;
         const r = el.getBoundingClientRect();
-        el.style.setProperty('--mx', ((t.clientX - r.left) / r.width * 100) + '%');
-        el.style.setProperty('--my', ((t.clientY - r.top) / r.height * 100) + '%');
+        el.style.setProperty("--mx", ((t.clientX - r.left) / r.width) * 100 + "%");
+        el.style.setProperty("--my", ((t.clientY - r.top) / r.height) * 100 + "%");
       };
-      el.addEventListener('mousemove', move, opts);
-      el.addEventListener('touchstart', move, opts);
-      el.addEventListener('touchmove', move, opts);
-      el.addEventListener('mouseenter', () => document.body.classList.add('is-hovering'), opts);
-      el.addEventListener('mouseleave', () => document.body.classList.remove('is-hovering'), opts);
-      const clear = () => { el.style.removeProperty('--mx'); el.style.removeProperty('--my'); };
-      el.addEventListener('mouseleave', clear, opts);
-      el.addEventListener('touchend', clear, opts);
-      el.addEventListener('touchcancel', clear, opts);
+
+      el.addEventListener("mousemove", move, opts);
+      el.addEventListener("touchstart", move, opts);
+      el.addEventListener("touchmove", move, opts);
+      el.addEventListener("mouseenter", () => document.body.classList.add("is-hovering"), opts);
+      el.addEventListener("mouseleave", () => document.body.classList.remove("is-hovering"), opts);
+
+      const clear = () => {
+        el.style.removeProperty("--mx");
+        el.style.removeProperty("--my");
+      };
+
+      el.addEventListener("mouseleave", clear, opts);
+      el.addEventListener("touchend", clear, opts);
+      el.addEventListener("touchcancel", clear, opts);
     });
 
-    const finePointer = window.matchMedia('(pointer:fine)').matches;
-    if (finePointer) {
-      const canvas = document.getElementById('cursorFx');
-      const ctx = canvas.getContext('2d');
-      let w = 0, h = 0;
+    const finePointer = window.matchMedia("(pointer:fine)").matches;
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    if (finePointer && !reduceMotion) {
+      const canvas = document.getElementById("cursorFx");
+      const ctx = canvas.getContext("2d");
       let particles = [];
       let hue = 0;
 
       const resize = () => {
-        w = canvas.width = window.innerWidth * devicePixelRatio;
-        h = canvas.height = window.innerHeight * devicePixelRatio;
-        canvas.style.width = window.innerWidth + 'px';
-        canvas.style.height = window.innerHeight + 'px';
+        canvas.width = window.innerWidth * devicePixelRatio;
+        canvas.height = window.innerHeight * devicePixelRatio;
+        canvas.style.width = window.innerWidth + "px";
+        canvas.style.height = window.innerHeight + "px";
         ctx.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0);
       };
+
       resize();
-      window.addEventListener('resize', resize, opts);
+      window.addEventListener("resize", resize, opts);
 
       let tx = window.innerWidth / 2;
       let ty = window.innerHeight / 2;
       let px = tx;
       let py = ty;
 
-      const onMove = e => {
+      const onMove = (e) => {
         tx = e.clientX;
         ty = e.clientY;
-        document.documentElement.style.setProperty('--cx', tx + 'px');
-        document.documentElement.style.setProperty('--cy', ty + 'px');
+        document.documentElement.style.setProperty("--cx", tx + "px");
+        document.documentElement.style.setProperty("--cy", ty + "px");
 
         const dx = (tx / window.innerWidth - 0.5) * 2;
         const dy = (ty / window.innerHeight - 0.5) * 2;
-        document.documentElement.style.setProperty('--ry', (dx * 1.9).toFixed(2) + 'deg');
-        document.documentElement.style.setProperty('--rx', (-dy * 1.9).toFixed(2) + 'deg');
+        document.documentElement.style.setProperty("--ry", (dx * 1.9).toFixed(2) + "deg");
+        document.documentElement.style.setProperty("--rx", (-dy * 1.9).toFixed(2) + "deg");
       };
-      window.addEventListener('mousemove', onMove, opts);
+
+      window.addEventListener("mousemove", onMove, opts);
 
       const render = () => {
         ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
@@ -264,7 +509,7 @@
         px += (tx - px) * 0.24;
         py += (ty - py) * 0.24;
 
-        for (let i = 0; i < 3; i++) {
+        for (let i = 0; i < 3; i += 1) {
           hue = (hue + 7) % 360;
           particles.push({
             x: px + (Math.random() - 0.5) * 10,
@@ -277,7 +522,8 @@
           });
         }
 
-        particles = particles.filter(p => p.life > 0.03);
+        particles = particles.filter((p) => p.life > 0.03);
+
         for (const p of particles) {
           p.x += p.vx;
           p.y += p.vy;
@@ -285,25 +531,26 @@
           p.size *= 0.985;
 
           const g = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.size);
-          g.addColorStop(0, `hsla(${p.hue}, 95%, 65%, ${p.life})`);
-          g.addColorStop(1, `hsla(${p.hue}, 95%, 65%, 0)`);
+          g.addColorStop(0, "hsla(" + p.hue + ", 95%, 65%, " + p.life + ")");
+          g.addColorStop(1, "hsla(" + p.hue + ", 95%, 65%, 0)");
           ctx.fillStyle = g;
           ctx.beginPath();
           ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
           ctx.fill();
         }
 
-        const intensity = document.body.classList.contains('is-hovering') ? 16 : 7;
+        const intensity = document.body.classList.contains("is-hovering") ? 16 : 7;
         const wobble = Math.sin(Date.now() * 0.012) * intensity;
-        document.documentElement.style.setProperty('--warp', wobble.toFixed(2) + 'px');
+        document.documentElement.style.setProperty("--warp", wobble.toFixed(2) + "px");
 
         requestAnimationFrame(render);
       };
+
       render();
 
-      window.addEventListener('mouseleave', () => {
-        document.documentElement.style.setProperty('--rx', '0deg');
-        document.documentElement.style.setProperty('--ry', '0deg');
+      window.addEventListener("mouseleave", () => {
+        document.documentElement.style.setProperty("--rx", "0deg");
+        document.documentElement.style.setProperty("--ry", "0deg");
       }, opts);
     }
   </script>
