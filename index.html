@@ -139,17 +139,6 @@
       animation: sirenBeat 3.2s ease-in-out infinite;
     }
 
-    #cursorFx {
-      position: fixed;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      pointer-events: none;
-      z-index: 2;
-      opacity: 0.58;
-      mix-blend-mode: screen;
-    }
-
     .wrap {
       width: var(--w);
       padding: 28px 16px 58px;
@@ -262,15 +251,6 @@
       flex: 1;
     }
 
-    .eyebrow {
-      margin: 0 0 6px;
-      color: var(--accent);
-      font: 600 11px/1.2 var(--font-code);
-      letter-spacing: 0.22em;
-      text-transform: uppercase;
-      animation: textBlink 4.6s steps(1, end) infinite;
-    }
-
     .name {
       position: relative;
       display: inline-block;
@@ -326,9 +306,9 @@
       position: relative;
       display: flex;
       align-items: center;
-      justify-content: space-between;
+      justify-content: center;
       gap: 16px;
-      text-align: left;
+      text-align: center;
       padding: 18px 20px;
       min-height: 68px;
       color: inherit;
@@ -378,16 +358,6 @@
       animation-delay: 0.8s;
     }
 
-    .link::before {
-      content: "";
-      position: absolute;
-      inset: 0 auto 0 0;
-      width: 4px;
-      border-radius: 18px 0 0 18px;
-      background: linear-gradient(180deg, #ff8d8d, var(--accent), var(--accent-2));
-      opacity: 0.9;
-    }
-
     .link::after {
       content: "";
       position: absolute;
@@ -398,12 +368,6 @@
         linear-gradient(90deg, rgba(255, 40, 40, 0.04), transparent 30%);
       opacity: 0;
       transition: opacity 0.2s ease;
-    }
-
-    .link:nth-child(3n)::before,
-    .link:nth-child(3n + 2)::before {
-      width: 6px;
-      filter: blur(0.4px);
     }
 
     .link:hover {
@@ -424,9 +388,19 @@
       box-shadow: 0 0 0 3px rgba(255, 91, 91, 0.12), 0 18px 34px rgba(0, 0, 0, 0.36);
     }
 
-    .text,
-    .arrow {
+    .text {
       position: relative;
+      z-index: 1;
+      flex: 1;
+      display: grid;
+      justify-items: center;
+      text-align: center;
+    }
+
+    .arrow {
+      position: absolute;
+      top: 50%;
+      right: 20px;
       z-index: 1;
     }
 
@@ -459,13 +433,13 @@
       color: #ff8e8e;
       font: 600 18px/1 var(--font-code);
       opacity: 0.9;
-      transform: translateX(0);
+      transform: translateY(-50%) translateX(0);
       transition: transform 0.2s ease, opacity 0.2s ease;
     }
 
     .link:hover .arrow,
     .link:focus-visible .arrow {
-      transform: translateX(6px) skewX(-8deg);
+      transform: translateY(-50%) translateX(6px) skewX(-8deg);
       opacity: 1;
     }
 
@@ -543,17 +517,9 @@
       animation: introPanelJolt 3.6s steps(2, end) infinite;
     }
 
-    .intro__label {
-      margin: 0;
-      font: 700 11px/1.2 var(--font-code);
-      letter-spacing: 0.28em;
-      text-transform: uppercase;
-      color: #ff9b9b;
-      opacity: 0.88;
-    }
-
     .intro__title {
-      margin: 14px 0 10px;
+      margin: 0;
+      text-align: center;
       font: 700 clamp(42px, 9vw, 92px)/0.94 var(--font-display);
       letter-spacing: 0.12em;
       text-transform: uppercase;
@@ -583,86 +549,6 @@
 
     .intro__title span:nth-child(5) {
       animation-delay: 0.14s;
-    }
-
-    .intro__line {
-      margin: 0;
-      max-width: 40ch;
-      color: #ddb4b4;
-      font-size: clamp(13px, 2vw, 16px);
-      line-height: 1.6;
-    }
-
-    .intro__status {
-      margin-top: 16px;
-      display: grid;
-      gap: 8px;
-    }
-
-    .intro__meter {
-      height: 7px;
-      border-radius: 999px;
-      background: rgba(255, 255, 255, 0.04);
-      overflow: hidden;
-      border: 1px solid rgba(255, 80, 80, 0.12);
-    }
-
-    .intro__meter > span {
-      display: block;
-      width: 100%;
-      height: 100%;
-      transform-origin: left center;
-      background: linear-gradient(90deg, rgba(255, 90, 90, 0.18), rgba(255, 140, 140, 0.9), rgba(122, 9, 18, 0.34));
-      animation: loadBar 2.8s linear forwards;
-    }
-
-    .intro__hint {
-      margin: 0;
-      font: 500 11px/1.4 var(--font-code);
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: #bf8b8b;
-    }
-
-    .intro__actions {
-      margin-top: 22px;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-      align-items: center;
-    }
-
-    .intro__enter {
-      appearance: none;
-      border: 1px solid rgba(255, 103, 103, 0.24);
-      border-radius: 999px;
-      padding: 12px 18px;
-      background:
-        linear-gradient(135deg, rgba(255, 98, 98, 0.18), rgba(122, 9, 18, 0.2)),
-        rgba(18, 2, 4, 0.88);
-      color: #fff1f1;
-      font: 700 12px/1 var(--font-code);
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
-      cursor: pointer;
-      transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
-      box-shadow: 0 14px 24px rgba(0, 0, 0, 0.28);
-    }
-
-    .intro__enter:hover,
-    .intro__enter:focus-visible {
-      transform: translateY(-2px) scale(1.03);
-      border-color: rgba(255, 140, 140, 0.36);
-      box-shadow: 0 18px 30px rgba(0, 0, 0, 0.34);
-      outline: none;
-    }
-
-    .intro__skip {
-      font: 600 11px/1 var(--font-code);
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      color: #b88080;
-      opacity: 0.9;
     }
 
     @keyframes fadeIn {
@@ -903,16 +789,6 @@
       }
     }
 
-    @keyframes loadBar {
-      0% {
-        transform: scaleX(0);
-      }
-
-      100% {
-        transform: scaleX(1);
-      }
-    }
-
     @media (prefers-reduced-motion: reduce) {
       *,
       *::before,
@@ -977,15 +853,6 @@
         letter-spacing: 0.08em;
       }
 
-      .intro__actions {
-        align-items: flex-start;
-        flex-direction: column;
-      }
-
-      #cursorFx {
-        display: none;
-      }
-
       .warp {
         opacity: 0.3;
       }
@@ -999,25 +866,13 @@
 <body class="intro-active">
   <div class="intro" id="intro" role="dialog" aria-label="Intro">
     <div class="intro__panel">
-      <p class="intro__label">ward protocol</p>
-      <div class="intro__title" aria-label="dreiji">
-        <span>D</span><span>R</span><span>E</span><span>I</span><span>J</span><span>I</span>
-      </div>
-      <p class="intro__line">wejdz powoli. ekran zaraz sie otworzy i przepusci tylko to, co wytrzyma ten klimat.</p>
-      <div class="intro__status">
-        <div class="intro__meter" aria-hidden="true"><span></span></div>
-        <p class="intro__hint">initializing ward lights // signal unstable</p>
-      </div>
-      <div class="intro__actions">
-        <button class="intro__enter" id="introEnter" type="button">Enter</button>
-        <span class="intro__skip">albo poczekaj chwile</span>
+      <div class="intro__title" aria-label="DREIJI.PL">
+        <span>D</span><span>R</span><span>E</span><span>I</span><span>J</span><span>I</span><span>.</span><span>P</span><span>L</span>
       </div>
     </div>
   </div>
   <div class="bg" aria-hidden="true"></div>
   <div class="warp" aria-hidden="true"></div>
-  <canvas id="cursorFx" aria-hidden="true"></canvas>
-
   <main class="wrap">
     <header class="profile">
       <img
@@ -1029,7 +884,6 @@
         onkeydown="if(event.key==='Enter') location.href='/vault-r3d-only-9d8f6a/'"
       />
       <div class="meta">
-        <p class="eyebrow">dreiji.pl</p>
         <h1 class="name" data-text="dreiji">dreiji</h1>
         <p class="bio">pisze za duzo i spie za malo</p>
       </div>
@@ -1097,7 +951,6 @@
   <script>
     const opts = { passive: true };
     const intro = document.getElementById("intro");
-    const introEnter = document.getElementById("introEnter");
     const links = document.querySelectorAll(".link");
 
     links.forEach((el) => {
@@ -1124,7 +977,6 @@
       el.addEventListener("touchcancel", clear, opts);
     });
 
-    const finePointer = window.matchMedia("(pointer:fine)").matches;
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
     let introClosed = false;
@@ -1147,11 +999,6 @@
     if (intro) {
       const introDelay = reduceMotion ? 900 : 2800;
       const autoIntro = window.setTimeout(dismissIntro, introDelay);
-
-      introEnter?.addEventListener("click", () => {
-        window.clearTimeout(autoIntro);
-        dismissIntro();
-      });
 
       intro.addEventListener("click", (event) => {
         if (event.target === intro) {
@@ -1187,90 +1034,10 @@
       }, 900);
     }
 
-    if (finePointer && !reduceMotion) {
-      const canvas = document.getElementById("cursorFx");
-      const ctx = canvas.getContext("2d");
-      let particles = [];
-
-      const resize = () => {
-        canvas.width = window.innerWidth * devicePixelRatio;
-        canvas.height = window.innerHeight * devicePixelRatio;
-        canvas.style.width = window.innerWidth + "px";
-        canvas.style.height = window.innerHeight + "px";
-        ctx.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0);
-      };
-
-      resize();
-      window.addEventListener("resize", resize, opts);
-
-      let tx = window.innerWidth / 2;
-      let ty = window.innerHeight / 2;
-      let px = tx;
-      let py = ty;
-
-      const onMove = (e) => {
-        tx = e.clientX;
-        ty = e.clientY;
-        document.documentElement.style.setProperty("--cx", tx + "px");
-        document.documentElement.style.setProperty("--cy", ty + "px");
-
-        const dx = (tx / window.innerWidth - 0.5) * 2;
-        const dy = (ty / window.innerHeight - 0.5) * 2;
-        document.documentElement.style.setProperty("--ry", (dx * 1.9).toFixed(2) + "deg");
-        document.documentElement.style.setProperty("--rx", (-dy * 1.9).toFixed(2) + "deg");
-      };
-
-      window.addEventListener("mousemove", onMove, opts);
-
-      const render = () => {
-        ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
-
-        px += (tx - px) * 0.24;
-        py += (ty - py) * 0.24;
-
-        for (let i = 0; i < 3; i += 1) {
-          const hue = 356 + Math.random() * 10;
-          particles.push({
-            x: px + (Math.random() - 0.5) * 10,
-            y: py + (Math.random() - 0.5) * 10,
-            vx: (Math.random() - 0.5) * 0.8,
-            vy: (Math.random() - 0.5) * 0.8,
-            life: 1,
-            size: 7 + Math.random() * 9,
-            hue: hue.toFixed(2)
-          });
-        }
-
-        particles = particles.filter((p) => p.life > 0.03);
-
-        for (const p of particles) {
-          p.x += p.vx;
-          p.y += p.vy;
-          p.life *= 0.94;
-          p.size *= 0.985;
-
-          const g = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.size);
-          g.addColorStop(0, "hsla(" + p.hue + ", 95%, 65%, " + p.life + ")");
-          g.addColorStop(1, "hsla(" + p.hue + ", 95%, 65%, 0)");
-          ctx.fillStyle = g;
-          ctx.beginPath();
-          ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-          ctx.fill();
-        }
-
-        const intensity = document.body.classList.contains("is-hovering") ? 16 : 7;
-        const wobble = Math.sin(Date.now() * 0.012) * intensity;
-        document.documentElement.style.setProperty("--warp", wobble.toFixed(2) + "px");
-
-        requestAnimationFrame(render);
-      };
-
-      render();
-
-      window.addEventListener("mouseleave", () => {
-        document.documentElement.style.setProperty("--rx", "0deg");
-        document.documentElement.style.setProperty("--ry", "0deg");
-      }, opts);
+    if (!reduceMotion) {
+      const intensity = document.body.classList.contains("is-hovering") ? 16 : 7;
+      const wobble = Math.sin(Date.now() * 0.012) * intensity;
+      document.documentElement.style.setProperty("--warp", wobble.toFixed(2) + "px");
     }
   </script>
 </body>
