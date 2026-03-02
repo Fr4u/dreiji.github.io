@@ -370,6 +370,12 @@
       transition: opacity 0.2s ease;
     }
 
+    .link:nth-child(3n)::before,
+    .link:nth-child(3n + 2)::before {
+      width: 6px;
+      filter: blur(0.4px);
+    }
+
     .link:hover {
       transform: translateY(-4px) scale(1.02) rotate(-0.4deg);
       background: var(--card-hover);
