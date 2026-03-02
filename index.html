@@ -48,6 +48,36 @@
       animation: fadeIn 0.7s ease forwards;
     }
 
+    body::before,
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    body::before {
+      background:
+        radial-gradient(circle at 50% 50%, transparent 0 36%, rgba(0, 0, 0, 0.28) 72%, rgba(0, 0, 0, 0.7) 100%),
+        repeating-linear-gradient(
+          -25deg,
+          transparent 0 16px,
+          rgba(255, 20, 20, 0.028) 16px 20px,
+          transparent 20px 48px
+        );
+      opacity: 0.8;
+      mix-blend-mode: multiply;
+    }
+
+    body::after {
+      background:
+        linear-gradient(90deg, transparent 0 44%, rgba(255, 255, 255, 0.018) 44% 45%, transparent 45% 100%),
+        linear-gradient(180deg, transparent 0 68%, rgba(255, 70, 70, 0.03) 68% 70%, transparent 70% 100%);
+      opacity: 0.38;
+      animation: clinicFlash 6.8s steps(1, end) infinite;
+    }
+
     .bg {
       position: fixed;
       inset: 0;
@@ -58,6 +88,7 @@
         radial-gradient(42% 44% at 86% 12%, rgba(154, 9, 27, 0.22), transparent 58%),
         radial-gradient(72% 58% at 50% 100%, rgba(68, 0, 6, 0.46), transparent 65%),
         linear-gradient(180deg, #250308, #140205 52%, #080102);
+      animation: roomPulse 7s ease-in-out infinite;
     }
 
     .bg::before,
@@ -79,6 +110,7 @@
         linear-gradient(120deg, transparent 0 44%, rgba(255, 68, 68, 0.035) 44% 46%, transparent 46% 100%);
       mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.82), transparent 88%);
       opacity: 0.42;
+      animation: scanShift 7s linear infinite;
     }
 
     .bg::after {
@@ -87,6 +119,7 @@
         url("background.png") center top / cover no-repeat;
       opacity: 0.14;
       mix-blend-mode: lighten;
+      animation: bgFlicker 4.4s steps(2, end) infinite;
     }
 
     .warp {
@@ -99,6 +132,7 @@
       transform: translate3d(calc(var(--warp) * 0.08), calc(var(--warp) * -0.05), 0) scale(1.04);
       transition: opacity 0.2s ease;
       opacity: 0.54;
+      animation: sirenBeat 3.2s ease-in-out infinite;
     }
 
     #cursorFx {
@@ -120,10 +154,24 @@
       transform: perspective(900px) rotateX(var(--rx)) rotateY(var(--ry));
       transition: transform 0.18s ease-out, filter 0.18s ease-out;
       filter: saturate(1.04) contrast(1.02);
+      animation: shellShake 5.4s steps(2, end) infinite;
     }
 
     body.is-hovering .wrap {
       filter: saturate(1.14) contrast(1.08);
+    }
+
+    body.chaos::after {
+      opacity: 0.62;
+    }
+
+    body.chaos .wrap {
+      filter: saturate(1.22) contrast(1.14) blur(0.2px);
+    }
+
+    body.chaos .name::before,
+    body.chaos .name::after {
+      opacity: 0.6;
     }
 
     .profile {
@@ -141,6 +189,7 @@
       box-shadow: var(--shadow);
       overflow: hidden;
       backdrop-filter: blur(10px);
+      animation: frameTremor 6s steps(2, end) infinite;
     }
 
     .profile::before {
@@ -197,9 +246,12 @@
       font: 600 11px/1.2 var(--font-code);
       letter-spacing: 0.22em;
       text-transform: uppercase;
+      animation: textBlink 4.6s steps(1, end) infinite;
     }
 
     .name {
+      position: relative;
+      display: inline-block;
       margin: 0;
       font-family: var(--font-display);
       font-size: clamp(28px, 4vw, 38px);
@@ -208,6 +260,30 @@
       text-transform: uppercase;
       color: #fff0f0;
       text-shadow: 0 0 22px rgba(255, 55, 55, 0.16);
+      animation: titleFlicker 5.2s steps(1, end) infinite;
+    }
+
+    .name::before,
+    .name::after {
+      content: attr(data-text);
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      opacity: 0.35;
+    }
+
+    .name::before {
+      color: rgba(255, 42, 42, 0.7);
+      transform: translate(-2px, 0);
+      clip-path: inset(0 0 46% 0);
+      animation: glitchSliceA 2.4s steps(2, end) infinite;
+    }
+
+    .name::after {
+      color: rgba(255, 210, 210, 0.35);
+      transform: translate(2px, 0);
+      clip-path: inset(52% 0 0 0);
+      animation: glitchSliceB 1.9s steps(2, end) infinite;
     }
 
     .bio {
@@ -246,6 +322,14 @@
       backdrop-filter: blur(10px);
     }
 
+    .link:nth-child(odd) {
+      transform: rotate(-0.55deg);
+    }
+
+    .link:nth-child(even) {
+      transform: rotate(0.55deg);
+    }
+
     .link::before {
       content: "";
       position: absolute;
@@ -268,8 +352,14 @@
       transition: opacity 0.2s ease;
     }
 
+    .link:nth-child(3n)::before,
+    .link:nth-child(3n + 2)::before {
+      width: 6px;
+      filter: blur(0.4px);
+    }
+
     .link:hover {
-      transform: translateY(-2px) scale(1.01);
+      transform: translateY(-4px) scale(1.02) rotate(-0.4deg);
       background: var(--card-hover);
       border-color: rgba(255, 91, 91, 0.28);
       box-shadow: 0 18px 34px rgba(0, 0, 0, 0.36);
@@ -293,10 +383,21 @@
     }
 
     .title {
+      position: relative;
       font: 700 18px/1.1 var(--font-display);
       letter-spacing: -0.02em;
       text-transform: uppercase;
       color: #fff2f2;
+    }
+
+    .title::before {
+      content: attr(data-text);
+      position: absolute;
+      inset: 0;
+      color: rgba(255, 78, 78, 0.34);
+      transform: translate(1px, -1px);
+      opacity: 0;
+      pointer-events: none;
     }
 
     .desc {
@@ -315,13 +416,182 @@
 
     .link:hover .arrow,
     .link:focus-visible .arrow {
-      transform: translateX(4px);
+      transform: translateX(6px) skewX(-8deg);
       opacity: 1;
+    }
+
+    .link:hover .title::before,
+    .link:focus-visible .title::before {
+      opacity: 1;
+      animation: microGlitch 0.25s steps(2, end) 2;
     }
 
     @keyframes fadeIn {
       to {
         opacity: 1;
+      }
+    }
+
+    @keyframes clinicFlash {
+      0%, 9%, 11%, 48%, 50%, 100% {
+        opacity: 0.28;
+      }
+
+      10%, 49% {
+        opacity: 0.5;
+      }
+    }
+
+    @keyframes roomPulse {
+      0%, 100% {
+        transform: scale(1);
+        filter: brightness(0.92) saturate(1);
+      }
+
+      50% {
+        transform: scale(1.03);
+        filter: brightness(1.08) saturate(1.14);
+      }
+    }
+
+    @keyframes scanShift {
+      0% {
+        transform: translate3d(0, 0, 0);
+      }
+
+      50% {
+        transform: translate3d(0, 8px, 0);
+      }
+
+      100% {
+        transform: translate3d(0, 0, 0);
+      }
+    }
+
+    @keyframes bgFlicker {
+      0%, 14%, 16%, 64%, 66%, 100% {
+        opacity: 0.14;
+      }
+
+      15%, 65% {
+        opacity: 0.2;
+      }
+    }
+
+    @keyframes sirenBeat {
+      0%, 100% {
+        opacity: 0.46;
+      }
+
+      50% {
+        opacity: 0.66;
+      }
+    }
+
+    @keyframes shellShake {
+      0%, 100% {
+        transform: perspective(900px) rotateX(var(--rx)) rotateY(var(--ry)) translate3d(0, 0, 0);
+      }
+
+      8% {
+        transform: perspective(900px) rotateX(calc(var(--rx) + 0.8deg)) rotateY(calc(var(--ry) - 0.7deg)) translate3d(-1px, 0, 0);
+      }
+
+      9% {
+        transform: perspective(900px) rotateX(calc(var(--rx) - 0.4deg)) rotateY(calc(var(--ry) + 0.4deg)) translate3d(1px, 0, 0);
+      }
+    }
+
+    @keyframes frameTremor {
+      0%, 100% {
+        transform: translate3d(0, 0, 0);
+      }
+
+      18% {
+        transform: translate3d(-1px, 0, 0);
+      }
+
+      19% {
+        transform: translate3d(1px, 0, 0);
+      }
+
+      61% {
+        transform: translate3d(0, -1px, 0);
+      }
+
+      62% {
+        transform: translate3d(0, 1px, 0);
+      }
+    }
+
+    @keyframes textBlink {
+      0%, 48%, 50%, 100% {
+        opacity: 0.92;
+      }
+
+      49% {
+        opacity: 0.36;
+      }
+    }
+
+    @keyframes titleFlicker {
+      0%, 29%, 31%, 72%, 74%, 100% {
+        opacity: 1;
+      }
+
+      30%, 73% {
+        opacity: 0.82;
+      }
+    }
+
+    @keyframes glitchSliceA {
+      0%, 100% {
+        transform: translate(-2px, 0);
+      }
+
+      20% {
+        transform: translate(2px, -1px);
+      }
+
+      21% {
+        transform: translate(-3px, 1px);
+      }
+    }
+
+    @keyframes glitchSliceB {
+      0%, 100% {
+        transform: translate(2px, 0);
+      }
+
+      42% {
+        transform: translate(-1px, 1px);
+      }
+
+      43% {
+        transform: translate(3px, -1px);
+      }
+    }
+
+    @keyframes microGlitch {
+      0% {
+        transform: translate(1px, -1px);
+      }
+
+      50% {
+        transform: translate(-2px, 1px);
+      }
+
+      100% {
+        transform: translate(2px, 0);
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        animation: none !important;
+        transition: none !important;
       }
     }
 
@@ -362,6 +632,7 @@
       .link {
         min-height: 58px;
         padding: 16px 18px;
+        transform: none;
       }
 
       #cursorFx {
@@ -395,7 +666,7 @@
       />
       <div class="meta">
         <p class="eyebrow">dreiji.pl</p>
-        <h1 class="name">dreiji</h1>
+        <h1 class="name" data-text="dreiji">dreiji</h1>
         <p class="bio">pisze za duzo i spie za malo</p>
       </div>
     </header>
@@ -403,7 +674,7 @@
     <section class="links" id="links">
       <a class="link" href="https://www.instagram.com/dreiji_/" target="_blank" rel="noreferrer">
         <div class="text">
-          <div class="title">Instagram</div>
+          <div class="title" data-text="Instagram">Instagram</div>
           <div class="desc">zdjecia</div>
         </div>
         <div class="arrow" aria-hidden="true">-&gt;</div>
@@ -411,7 +682,7 @@
 
       <a class="link" href="https://www.youtube.com/@dreijiwtf" target="_blank" rel="noreferrer">
         <div class="text">
-          <div class="title">YouTube</div>
+          <div class="title" data-text="YouTube">YouTube</div>
           <div class="desc"></div>
         </div>
         <div class="arrow" aria-hidden="true">-&gt;</div>
@@ -419,7 +690,7 @@
 
       <a class="link" href="https://open.spotify.com/user/q4qar66nrdz396d67bpfbv952" target="_blank" rel="noreferrer">
         <div class="text">
-          <div class="title">Spotify</div>
+          <div class="title" data-text="Spotify">Spotify</div>
           <div class="desc">muzyka</div>
         </div>
         <div class="arrow" aria-hidden="true">-&gt;</div>
@@ -427,7 +698,7 @@
 
       <a class="link" href="https://discord.com/users/278065747199131650" target="_blank" rel="noreferrer">
         <div class="text">
-          <div class="title">Discord</div>
+          <div class="title" data-text="Discord">Discord</div>
           <div class="desc">kontakt</div>
         </div>
         <div class="arrow" aria-hidden="true">-&gt;</div>
@@ -435,7 +706,7 @@
 
       <a class="link" href="https://twitch.tv/dreiji" target="_blank" rel="noreferrer">
         <div class="text">
-          <div class="title">Twitch</div>
+          <div class="title" data-text="Twitch">Twitch</div>
           <div class="desc">live czasem</div>
         </div>
         <div class="arrow" aria-hidden="true">-&gt;</div>
@@ -443,7 +714,7 @@
 
       <a class="link" href="https://mail.google.com/mail/?view=cm&fs=1&to=kontakt@dreiji.pl" target="_blank" rel="noreferrer">
         <div class="text">
-          <div class="title">Mail</div>
+          <div class="title" data-text="Mail">Mail</div>
           <div class="desc"></div>
         </div>
         <div class="arrow" aria-hidden="true">-&gt;</div>
@@ -451,7 +722,7 @@
 
       <a class="link" href="https://x.com/Dreiji_" target="_blank" rel="noreferrer">
         <div class="text">
-          <div class="title">X</div>
+          <div class="title" data-text="X">X</div>
           <div class="desc"></div>
         </div>
         <div class="arrow" aria-hidden="true">-&gt;</div>
@@ -489,6 +760,25 @@
 
     const finePointer = window.matchMedia("(pointer:fine)").matches;
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    if (!reduceMotion) {
+      const triggerChaos = () => {
+        document.body.classList.add("is-hovering");
+        document.body.classList.toggle("chaos", Math.random() > 0.5);
+        window.setTimeout(() => {
+          document.body.classList.remove("chaos");
+          if (!document.querySelector(".link:hover")) {
+            document.body.classList.remove("is-hovering");
+          }
+        }, 120 + Math.random() * 160);
+      };
+
+      window.setInterval(() => {
+        if (Math.random() > 0.78) {
+          triggerChaos();
+        }
+      }, 900);
+    }
 
     if (finePointer && !reduceMotion) {
       const canvas = document.getElementById("cursorFx");
