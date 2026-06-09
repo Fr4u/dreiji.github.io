@@ -3,1048 +3,820 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>THE_DEVIL</title>
+  <meta name="description" content="dreiji — słowa, muzyka, noc. Linki." />
+  <meta name="theme-color" content="#0a0405" />
+  <meta name="color-scheme" content="dark" />
+  <title>dreiji</title>
   <link rel="icon" href="w.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=JetBrains+Mono:wght@500;700&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cinzel+Decorative:wght@900&display=swap" rel="stylesheet" />
   <style>
     :root {
-      --w: min(620px, 92vw);
-      --w-links: min(480px, 88vw);
-      --font: "Space Grotesk", "Segoe UI", sans-serif;
-      --font-display: "Cinzel", Georgia, serif;
-      --font-code: "JetBrains Mono", Consolas, monospace;
-      --fg: #f5dcdc;
-      --muted: #bc8f8f;
-      --card: rgba(27, 5, 8, 0.84);
-      --card-hover: rgba(44, 7, 11, 0.92);
-      --stroke: rgba(255, 88, 88, 0.16);
-      --accent: #ff5b5b;
-      --accent-2: #7a0912;
-      --shadow: 0 26px 60px rgba(0, 0, 0, 0.46);
-      --rx: 0deg;
-      --ry: 0deg;
-      --warp: 0px;
+      --bg0: #0a0405;
+      --ink: #f2e7e4;
+      --muted: #9c7c7c;
+      --red: #c12f2c;
+      --red-bright: #ff5547;
+      --red-dim: rgba(186, 42, 40, 0.55);
+      --cold: rgba(122, 224, 255, 0.55); /* zimny kanał aberracji — żyje tylko w glitchu */
+      --hair: rgba(196, 62, 58, 0.30);
+      --bc: rgba(255, 78, 70, 0.62);
+      --blen: 15px;
+      --w: min(640px, 92vw);
+      --w-links: min(604px, 90vw);
+      --serif: "Cinzel", Georgia, serif;
+      --display: "Cinzel Decorative", "Cinzel", Georgia, serif;
+      --frame-bg:
+        linear-gradient(135deg, rgba(255, 70, 60, 0.07), transparent 36%),
+        linear-gradient(180deg, rgba(33, 7, 9, 0.88), rgba(13, 3, 4, 0.92));
+      --card-bg:
+        linear-gradient(135deg, rgba(255, 70, 60, 0.045), transparent 40%),
+        linear-gradient(180deg, rgba(27, 6, 8, 0.80), rgba(11, 3, 4, 0.86));
     }
 
-    * {
-      box-sizing: border-box;
-    }
-
-    html, body {
-      min-height: 100%;
-    }
+    * { box-sizing: border-box; }
+    html, body { min-height: 100%; }
 
     body {
       margin: 0;
-      color: var(--fg);
-      font: 16px/1.5 var(--font);
+      color: var(--ink);
+      font: 16px/1.5 var(--serif);
+      background: var(--bg0);
       display: grid;
       place-items: center;
       overflow-x: hidden;
-      background: #110204;
       opacity: 0;
-      animation: fadeIn 0.7s ease forwards;
+      animation: fade 0.8s ease forwards;
     }
 
-    body.intro-active {
-      overflow: hidden;
-    }
-
-    body::before,
-    body::after {
-      content: "";
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      z-index: 1;
-    }
-
-    body::before {
-      background:
-        radial-gradient(circle at 50% 50%, transparent 0 36%, rgba(0, 0, 0, 0.28) 72%, rgba(0, 0, 0, 0.7) 100%),
-        repeating-linear-gradient(
-          -25deg,
-          transparent 0 16px,
-          rgba(255, 20, 20, 0.028) 16px 20px,
-          transparent 20px 48px
-        );
-      opacity: 0.8;
-      mix-blend-mode: multiply;
-    }
-
-    body::after {
-      background:
-        linear-gradient(90deg, transparent 0 44%, rgba(255, 255, 255, 0.018) 44% 45%, transparent 45% 100%),
-        linear-gradient(180deg, transparent 0 68%, rgba(255, 70, 70, 0.03) 68% 70%, transparent 70% 100%);
-      opacity: 0.38;
-      animation: clinicFlash 6.8s steps(1, end) infinite;
-    }
-
+    /* ---------- tło : krwawa ściana ----------
+       Optymalizacja: stary roomPulse animował filter:brightness na całej
+       warstwie fixed = repaint pełnego ekranu co klatkę. Teraz puls robi
+       osobna nakładka animowana wyłącznie przez opacity (kompozytor). */
     .bg {
       position: fixed;
       inset: 0;
+      z-index: -4;
+      pointer-events: none;
+      background:
+        radial-gradient(60% 70% at 12% 46%, rgba(190, 26, 26, 0.34), transparent 60%),
+        radial-gradient(40% 50% at 9% 44%, rgba(255, 64, 48, 0.30), transparent 55%),
+        radial-gradient(55% 60% at 86% 16%, rgba(120, 10, 16, 0.26), transparent 60%),
+        radial-gradient(80% 70% at 50% 108%, rgba(60, 4, 8, 0.55), transparent 62%),
+        linear-gradient(180deg, #1a0608, #100305 54%, #070103);
+    }
+    .bg::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 50% 46%, transparent 0 40%, rgba(0, 0, 0, 0.34) 74%, rgba(0, 0, 0, 0.74) 100%);
+    }
+    .pulse {
+      position: fixed;
+      inset: 0;
+      z-index: -3;
+      pointer-events: none;
+      background:
+        radial-gradient(60% 70% at 12% 46%, rgba(255, 64, 48, 0.10), transparent 60%),
+        radial-gradient(55% 60% at 86% 16%, rgba(190, 26, 26, 0.08), transparent 60%);
+      opacity: 0;
+      animation: roomPulse 9s ease-in-out infinite;
+      contain: strict;
+    }
+    .leak {
+      position: fixed;
+      inset: 0;
+      z-index: -2;
+      pointer-events: none;
+      background: radial-gradient(36% 78% at 8% 48%, rgba(255, 58, 44, 0.20), transparent 60%);
+      mix-blend-mode: screen;
+      filter: blur(8px);
+      animation: leakBeat 6.5s ease-in-out infinite;
+      contain: strict;
+    }
+    .grain {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      pointer-events: none;
+      opacity: 0.18;
+      mix-blend-mode: overlay;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      contain: strict;
+    }
+
+    /* ---------- warstwa sygnału : scanliny + pasmo zakłóceń ---------- */
+    .scan {
+      position: fixed;
+      inset: 0;
+      z-index: 5;
+      pointer-events: none;
+      opacity: 0.10;
+      background: repeating-linear-gradient(
+        180deg,
+        transparent 0 2px,
+        rgba(0, 0, 0, 0.55) 2px 3px
+      );
+      mix-blend-mode: overlay;
+      contain: strict;
+    }
+    .tracking {
+      position: fixed;
+      left: 0; right: 0;
+      top: -12%;
+      height: 9vh;
+      z-index: 5;
+      pointer-events: none;
+      background: linear-gradient(180deg,
+        transparent,
+        rgba(255, 84, 71, 0.05) 30%,
+        rgba(122, 224, 255, 0.04) 52%,
+        rgba(255, 84, 71, 0.05) 70%,
+        transparent);
+      mix-blend-mode: screen;
+      animation: trackSweep 13s linear infinite;
+      will-change: transform;
+      contain: strict;
+    }
+
+    /* ---------- rozeta : wielkie koło maswerku za treścią ---------- */
+    .rose {
+      position: fixed;
+      left: 50%;
+      top: 50%;
+      width: min(1150px, 150vmax);
+      height: min(1150px, 150vmax);
       z-index: 0;
       pointer-events: none;
-      background:
-        radial-gradient(50% 62% at 14% 14%, rgba(255, 92, 92, 0.18), transparent 62%),
-        radial-gradient(42% 44% at 86% 12%, rgba(154, 9, 27, 0.22), transparent 58%),
-        radial-gradient(72% 58% at 50% 100%, rgba(68, 0, 6, 0.46), transparent 65%),
-        linear-gradient(180deg, #250308, #140205 52%, #080102);
-      animation: roomPulse 7s ease-in-out infinite;
+      color: var(--red);
+      opacity: 0.16;
+      transform: translate(-50%, -50%);
+      animation: roseTurn 360s linear infinite;
+      will-change: transform;
+      contain: strict;
+    }
+    @keyframes roseTurn {
+      from { transform: translate(-50%, -50%) rotate(0deg); }
+      to   { transform: translate(-50%, -50%) rotate(360deg); }
     }
 
-    .bg::before,
-    .bg::after {
-      content: "";
-      position: absolute;
-      inset: 0;
-    }
-
-    .bg::before {
-      background:
-        repeating-linear-gradient(
-          180deg,
-          rgba(255, 255, 255, 0.018) 0,
-          rgba(255, 255, 255, 0.018) 2px,
-          transparent 2px,
-          transparent 7px
-        ),
-        linear-gradient(120deg, transparent 0 44%, rgba(255, 68, 68, 0.035) 44% 46%, transparent 46% 100%);
-      mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.82), transparent 88%);
-      opacity: 0.42;
-      animation: scanShift 7s linear infinite;
-    }
-
-    .bg::after {
-      background:
-        linear-gradient(180deg, rgba(27, 2, 5, 0.18), rgba(20, 2, 5, 0.88)),
-        url("background.png") center top / cover no-repeat;
-      opacity: 0.14;
-      mix-blend-mode: lighten;
-      animation: bgFlicker 4.4s steps(2, end) infinite;
-    }
-
-    .warp {
+    /* ---------- sygnatury w rogach ---------- */
+    .sigil {
       position: fixed;
-      inset: -20%;
+      z-index: 4;
+      color: var(--red);
+      opacity: 0.85;
       pointer-events: none;
-      z-index: 1;
-      background: radial-gradient(240px 240px at var(--cx, 50%) var(--cy, 50%), rgba(255, 78, 78, 0.18), transparent 72%);
-      filter: blur(30px);
-      transform: translate3d(calc(var(--warp) * 0.08), calc(var(--warp) * -0.05), 0) scale(1.04);
-      transition: opacity 0.2s ease;
-      opacity: 0.54;
-      animation: sirenBeat 3.2s ease-in-out infinite;
+      filter: drop-shadow(0 0 6px rgba(200, 36, 30, 0.5));
+    }
+    .sigil--tr { top: 22px; right: 70px; width: 64px; height: 30px; }
+    .sigil--tl { top: 22px; left: 70px; width: 30px; height: 30px; }
+
+    /* gotyckie narożniki ramki — maswerk zamiast samych kresek */
+    .corn {
+      position: absolute;
+      width: 34px;
+      height: 34px;
+      color: var(--red);
+      opacity: 0.9;
+      z-index: 2;
+      pointer-events: none;
+      filter: drop-shadow(0 0 5px rgba(200, 36, 30, 0.55));
+    }
+    .corn--tl { top: -6px; left: -6px; }
+    .corn--tr { top: -6px; right: -6px; transform: scaleX(-1); }
+    .corn--bl { bottom: -6px; left: -6px; transform: scaleY(-1); }
+    .corn--br { bottom: -6px; right: -6px; transform: scale(-1, -1); }
+
+    /* ---------- pionowe szyny ---------- */
+    .vrail {
+      position: fixed;
+      top: 0; bottom: 0;
+      width: 50px;
+      z-index: 4;
+      display: grid;
+      place-items: center;
+      pointer-events: none;
+    }
+    .vrail--left { left: 6px; }
+    .vrail--right { right: 6px; }
+    .vrail .vline {
+      position: absolute;
+      top: 7%; bottom: 7%;
+      left: 50%;
+      width: 1px;
+      transform: translateX(-50%);
+      background: linear-gradient(180deg, transparent, var(--red-dim) 16%, var(--red-dim) 84%, transparent);
+      opacity: 0.7;
+    }
+    .vrail .plus {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      color: var(--red);
+      font: 700 13px var(--serif);
+      opacity: 0.8;
+    }
+    .vrail .plus.top { top: 4.5%; }
+    .vrail .plus.bot { bottom: 4.5%; }
+    .vrail .vtext {
+      writing-mode: vertical-rl;
+      transform: rotate(180deg);
+      letter-spacing: 0.46em;
+      font: 600 12px var(--serif);
+      text-transform: uppercase;
+      color: rgba(196, 54, 50, 0.78);
+      text-shadow: 0 0 10px rgba(190, 30, 30, 0.4);
     }
 
-    .wrap {
-      width: var(--w);
-      padding: 28px 16px 58px;
+    /* ---------- scena ---------- */
+    .stage {
       position: relative;
       z-index: 3;
-      transform: perspective(900px) rotateX(var(--rx)) rotateY(var(--ry));
-      transition: transform 0.18s ease-out, filter 0.18s ease-out;
-      filter: saturate(1.04) contrast(1.02);
-      animation: shellShake 5.4s steps(2, end) infinite;
-    }
-
-    body.intro-active .wrap {
-      opacity: 0;
-      transform: perspective(900px) rotateX(var(--rx)) rotateY(var(--ry)) scale(0.96);
-      filter: blur(10px) saturate(0.86);
-      pointer-events: none;
-    }
-
-    body.intro-done .wrap {
-      opacity: 1;
-      transform: perspective(900px) rotateX(var(--rx)) rotateY(var(--ry)) scale(1);
-      filter: saturate(1.04) contrast(1.02);
-      transition: opacity 0.7s ease, transform 0.7s ease, filter 0.7s ease;
-    }
-
-    body.is-hovering .wrap {
-      filter: saturate(1.14) contrast(1.08);
-    }
-
-    body.chaos::after {
-      opacity: 0.62;
-    }
-
-    body.chaos .wrap {
-      filter: saturate(1.22) contrast(1.14) blur(0.2px);
-    }
-
-    body.chaos .name::before,
-    body.chaos .name::after {
-      opacity: 0.6;
-    }
-
-    .profile {
-      position: relative;
+      width: var(--w);
+      padding: 30px 16px 46px;
       display: flex;
-      gap: 18px;
+      flex-direction: column;
       align-items: center;
-      padding: 22px;
-      border-radius: 24px;
+    }
+
+    .topcross {
+      width: 22px;
+      height: 30px;
+      margin-bottom: 14px;
+      color: var(--red);
+      filter: drop-shadow(0 0 7px rgba(200, 36, 30, 0.6));
+    }
+
+    .brk { position: relative; }
+    .brk::after {
+      content: "";
+      position: absolute;
+      inset: 6px;
+      pointer-events: none;
+      z-index: 2;
       background:
-        linear-gradient(135deg, rgba(255, 91, 91, 0.11), transparent 34%),
-        linear-gradient(160deg, rgba(122, 9, 18, 0.22), transparent 58%),
-        var(--card);
-      border: 1px solid var(--stroke);
-      box-shadow: var(--shadow);
+        linear-gradient(var(--bc), var(--bc)), linear-gradient(var(--bc), var(--bc)),
+        linear-gradient(var(--bc), var(--bc)), linear-gradient(var(--bc), var(--bc)),
+        linear-gradient(var(--bc), var(--bc)), linear-gradient(var(--bc), var(--bc)),
+        linear-gradient(var(--bc), var(--bc)), linear-gradient(var(--bc), var(--bc));
+      background-repeat: no-repeat;
+      background-size:
+        var(--blen) 1px, 1px var(--blen),
+        var(--blen) 1px, 1px var(--blen),
+        var(--blen) 1px, 1px var(--blen),
+        var(--blen) 1px, 1px var(--blen);
+      background-position:
+        left top, left top,
+        right top, right top,
+        left bottom, left bottom,
+        right bottom, right bottom;
+    }
+
+    /* ---------- baner ---------- */
+    .frame {
+      position: relative;
+      width: 100%;
+      min-height: 132px;
+      padding: 22px 30px;
+      border: 1px solid rgba(196, 50, 46, 0.42);
+      border-radius: 12px;
+      background: var(--frame-bg);
+      box-shadow:
+        inset 0 0 0 1px rgba(255, 70, 60, 0.06),
+        inset 0 0 38px rgba(150, 14, 14, 0.18),
+        0 26px 60px rgba(0, 0, 0, 0.55),
+        0 0 26px rgba(150, 18, 18, 0.18);
+      display: grid;
+      place-items: center;
       overflow: hidden;
-      backdrop-filter: blur(10px);
-      animation: frameTremor 6s steps(2, end) infinite;
     }
-
-    .profile:hover {
-      box-shadow: 0 30px 70px rgba(0, 0, 0, 0.54);
-    }
-
-    .profile::before {
+    .frame::before {
       content: "";
       position: absolute;
       inset: 0;
-      background:
-        linear-gradient(90deg, transparent, rgba(255, 96, 96, 0.08), transparent),
-        radial-gradient(circle at 12% 16%, rgba(255, 255, 255, 0.04), transparent 24%);
       pointer-events: none;
-    }
-
-    .profile::after {
-      content: "";
-      position: absolute;
-      inset: auto -12% -46% auto;
-      width: 240px;
-      height: 240px;
-      border-radius: 50%;
-      background: radial-gradient(circle, rgba(255, 61, 61, 0.16), transparent 64%);
+      background:
+        radial-gradient(60% 120% at 18% 50%, rgba(190, 24, 24, 0.22), transparent 60%),
+        linear-gradient(90deg, transparent, rgba(255, 80, 70, 0.05) 50%, transparent);
     }
 
     .pfp {
-      width: 86px;
-      height: 86px;
+      position: absolute;
+      left: 30px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 92px;
+      height: 92px;
       border-radius: 50%;
       object-fit: cover;
-      border: 1px solid rgba(255, 129, 129, 0.24);
+      border: 2px solid rgba(255, 86, 78, 0.55);
       box-shadow:
-        0 0 0 8px rgba(255, 90, 90, 0.04),
-        0 16px 36px rgba(0, 0, 0, 0.42);
+        0 0 0 5px rgba(8, 2, 3, 0.7),
+        0 0 24px rgba(200, 30, 26, 0.5),
+        inset 0 0 18px rgba(0, 0, 0, 0.6);
       cursor: pointer;
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      z-index: 3;
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
     }
-
-    .pfp:hover,
-    .pfp:focus-visible {
-      transform: translateY(-1px) scale(1.02);
+    .pfp:hover, .pfp:focus-visible {
+      transform: translateY(-50%) scale(1.03);
       box-shadow:
-        0 0 0 8px rgba(255, 104, 104, 0.06),
-        0 18px 42px rgba(0, 0, 0, 0.48);
+        0 0 0 5px rgba(8, 2, 3, 0.7),
+        0 0 34px rgba(255, 50, 44, 0.65);
       outline: none;
+      filter: url(#warp);
     }
 
-    .meta {
-      position: relative;
-      z-index: 1;
-      flex: 1;
-    }
+    .htext { position: relative; z-index: 2; text-align: center; }
 
-    .name {
+    /* ---------- DREIJI : glitch dwuwarstwowy ----------
+       ::before = kanał zimny (przesunięcie w lewo), ::after = kanał czerwony
+       (przesunięcie w prawo). Obie warstwy żyją tylko przez clip-path,
+       transform i opacity — zero layoutu, zero repaintu tekstu pod spodem.
+       Cykl 7s: 94% czasu martwa cisza, potem krótki rozpad. */
+    .brand {
       position: relative;
-      display: inline-block;
       margin: 0;
-      font-family: var(--font-display);
-      font-size: clamp(28px, 4vw, 38px);
-      line-height: 1;
-      letter-spacing: 0.04em;
+      font-family: var(--display);
+      font-weight: 900;
+      font-size: clamp(40px, 8vw, 70px);
+      line-height: 0.9;
+      letter-spacing: 0.10em;
       text-transform: uppercase;
-      color: #fff0f0;
-      text-shadow: 0 0 22px rgba(255, 55, 55, 0.16);
-      animation: titleFlicker 5.2s steps(1, end) infinite;
+      color: #f4ebe8;
+      text-shadow:
+        0 2px 1px rgba(0, 0, 0, 0.6),
+        0 0 26px rgba(255, 60, 50, 0.28),
+        0 0 60px rgba(150, 12, 12, 0.3);
     }
-
-    .name::before,
-    .name::after {
+    .brand::before,
+    .brand::after {
       content: attr(data-text);
       position: absolute;
       inset: 0;
       pointer-events: none;
-      opacity: 0.35;
+      opacity: 0;
+      text-shadow: none;
+      will-change: transform, clip-path;
+    }
+    .brand::before {
+      color: transparent;
+      -webkit-text-stroke: 1px var(--cold);
+      animation: sliceCold 7s steps(1, end) infinite;
+    }
+    .brand::after {
+      color: var(--red-bright);
+      animation: sliceRed 7s steps(1, end) infinite;
+      animation-delay: 0.04s;
+    }
+    @keyframes sliceCold {
+      0%, 94%, 100% { opacity: 0; transform: none; clip-path: inset(0); }
+      94.5% { opacity: 0.8; transform: translate(-3px, 1px); clip-path: inset(12% 0 64% 0); }
+      95.5% { opacity: 0.8; transform: translate(2px, -1px);  clip-path: inset(58% 0 8% 0); }
+      96.5% { opacity: 0.8; transform: translate(-2px, 0);    clip-path: inset(34% 0 40% 0); }
+      97.5% { opacity: 0; }
+    }
+    @keyframes sliceRed {
+      0%, 94%, 100% { opacity: 0; transform: none; clip-path: inset(0); }
+      94.5% { opacity: 0.9; transform: translate(3px, -1px); clip-path: inset(60% 0 10% 0); }
+      95.5% { opacity: 0.9; transform: translate(-2px, 1px); clip-path: inset(6% 0 70% 0); }
+      96.5% { opacity: 0.9; transform: translate(2px, 0);    clip-path: inset(40% 0 30% 0); }
+      97.5% { opacity: 0; }
+    }
+    /* dopalenie z JS — krótki zryw poza rytmem, żeby nie dało się przewidzieć */
+    .glitching .brand::before { animation: surgeCold 0.28s steps(1, end) 1; }
+    .glitching .brand::after  { animation: surgeRed  0.28s steps(1, end) 1; }
+    @keyframes surgeCold {
+      0%   { opacity: 0.85; transform: translate(-4px, 1px); clip-path: inset(20% 0 52% 0); }
+      33%  { opacity: 0.85; transform: translate(3px, -2px); clip-path: inset(66% 0 4% 0); }
+      66%  { opacity: 0.85; transform: translate(-2px, 1px); clip-path: inset(2% 0 78% 0); }
+      100% { opacity: 0; transform: none; clip-path: inset(0); }
+    }
+    @keyframes surgeRed {
+      0%   { opacity: 0.95; transform: translate(4px, -1px); clip-path: inset(70% 0 6% 0); }
+      33%  { opacity: 0.95; transform: translate(-3px, 2px); clip-path: inset(10% 0 62% 0); }
+      66%  { opacity: 0.95; transform: translate(2px, -1px); clip-path: inset(44% 0 28% 0); }
+      100% { opacity: 0; transform: none; clip-path: inset(0); }
+    }
+    /* w zrywie cała ramka łapie deformację SVG na ułamek sekundy */
+    .glitching .frame { filter: url(#warp); }
+
+    /* ---------- pęknięta linia pod tytułem (SVG) ---------- */
+    .rule-svg {
+      display: block;
+      width: 210px;
+      height: 14px;
+      margin: 10px auto 7px;
+      color: var(--red);
+      overflow: visible;
+    }
+    .rule-svg .shard { filter: drop-shadow(0 0 6px rgba(200, 36, 30, 0.7)); }
+
+    .tagline {
+      margin: 0;
+      font: 400 13px var(--serif);
+      letter-spacing: 0.30em;
+      text-transform: lowercase;
+      color: rgba(196, 120, 116, 0.92);
+      text-shadow: 0 0 10px rgba(160, 24, 24, 0.25);
     }
 
-    .name::before {
-      color: rgba(255, 42, 42, 0.7);
-      transform: translate(-2px, 0);
-      clip-path: inset(0 0 46% 0);
-      animation: glitchSliceA 2.4s steps(2, end) infinite;
-    }
-
-    .name::after {
-      color: rgba(255, 210, 210, 0.35);
-      transform: translate(2px, 0);
-      clip-path: inset(52% 0 0 0);
-      animation: glitchSliceB 1.9s steps(2, end) infinite;
-    }
-
-    .bio {
-      margin: 8px 0 0;
-      max-width: 36ch;
-      color: var(--muted);
-      text-shadow: 0 0 10px rgba(255, 40, 40, 0.06);
-    }
-
+    /* ---------- linki ---------- */
     .links {
       width: var(--w-links);
-      margin: 18px auto 0;
+      margin-top: 24px;
       display: grid;
-      gap: 12px;
+      gap: 15px;
     }
-
     .link {
       position: relative;
+      display: grid;
+      grid-template-columns: 66px 1fr 66px;
+      align-items: stretch;
+      min-height: 66px;
+      text-decoration: none;
+      color: inherit;
+      border: 1px solid rgba(196, 50, 46, 0.36);
+      border-radius: 9px;
+      background: var(--card-bg);
+      box-shadow:
+        inset 0 0 0 1px rgba(255, 70, 60, 0.04),
+        inset 0 0 24px rgba(140, 12, 12, 0.12),
+        0 16px 30px rgba(0, 0, 0, 0.42);
+      overflow: hidden;
+      transition: transform 0.2s ease, border-color 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
+    }
+    .link::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background: radial-gradient(220px 90px at var(--mx, 50%) var(--my, 50%), rgba(255, 80, 70, 0.12), transparent 70%);
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
+    .link:hover, .link:focus-visible {
+      transform: translateY(-3px);
+      border-color: rgba(255, 86, 78, 0.55);
+      background:
+        linear-gradient(135deg, rgba(255, 70, 60, 0.07), transparent 40%),
+        linear-gradient(180deg, rgba(40, 8, 10, 0.86), rgba(15, 4, 5, 0.9));
+      box-shadow:
+        inset 0 0 0 1px rgba(255, 70, 60, 0.08),
+        inset 0 0 30px rgba(160, 14, 14, 0.2),
+        0 20px 38px rgba(0, 0, 0, 0.5),
+        0 0 22px rgba(190, 24, 22, 0.28);
+      outline: none;
+    }
+    .link:hover::before, .link:focus-visible::before { opacity: 1; }
+
+    /* rozszczepienie nazwy linku przy najechaniu — jedna klatka rozpadu */
+    .link:hover .t, .link:focus-visible .t {
+      animation: tSplit 0.32s steps(1, end) 1;
+    }
+    @keyframes tSplit {
+      0%  { text-shadow: -2px 0 var(--cold), 2px 0 var(--red-bright); transform: translateX(1px); }
+      40% { text-shadow:  2px 0 var(--cold), -2px 0 var(--red-bright); transform: translateX(-1px); }
+      100%{ text-shadow: 0 0 14px rgba(190, 34, 30, 0.22); transform: none; }
+    }
+
+    .ic, .go {
+      display: grid;
+      place-items: center;
+      color: var(--red);
+      position: relative;
+      z-index: 1;
+    }
+    .ic { border-right: 1px solid var(--hair); }
+    .go {
+      border-left: 1px solid var(--hair);
+      color: #e7574a;
+      transition: transform 0.2s ease;
+    }
+    .ic svg { width: 23px; height: 23px; display: block; filter: drop-shadow(0 0 5px rgba(200, 36, 30, 0.45)); }
+    .go svg { width: 22px; height: 22px; display: block; filter: drop-shadow(0 0 5px rgba(220, 40, 34, 0.5)); }
+    .link:hover .go, .link:focus-visible .go { transform: translateX(4px); }
+    .link:hover .ic svg, .link:focus-visible .ic svg { filter: url(#warp-soft) drop-shadow(0 0 5px rgba(200, 36, 30, 0.45)); }
+
+    .label {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      padding: 12px 10px;
+      position: relative;
+      z-index: 1;
+      text-align: center;
+    }
+    .t {
+      font: 600 18px/1 var(--serif);
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: #f3ebe8;
+      text-shadow: 0 0 14px rgba(190, 34, 30, 0.22);
+    }
+    .s {
+      font: 400 11px/1 var(--serif);
+      letter-spacing: 0.34em;
+      text-transform: lowercase;
+      color: var(--muted);
+    }
+    .s:empty { display: none; }
+
+    /* ---------- stopka ---------- */
+    .foot {
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 16px;
-      text-align: center;
-      padding: 18px 20px;
-      min-height: 68px;
-      color: inherit;
-      text-decoration: none;
-      background:
-        linear-gradient(135deg, rgba(255, 255, 255, 0.02), transparent 42%),
-        linear-gradient(180deg, rgba(84, 9, 16, 0.12), transparent 58%),
-        var(--card);
-      border: 1px solid var(--stroke);
-      border-radius: 18px;
-      box-shadow: 0 14px 26px rgba(0, 0, 0, 0.28);
-      transition: transform 0.2s ease, background 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
-      overflow: hidden;
-      backdrop-filter: blur(10px);
-      animation: cardBuzz 6.4s steps(2, end) infinite;
+      width: var(--w-links);
+      margin-top: 26px;
+    }
+    .fline { height: 1px; flex: 1 1 auto; max-width: 200px; }
+    .fline.l { background: linear-gradient(90deg, transparent, var(--red-dim)); }
+    .fline.r { background: linear-gradient(90deg, var(--red-dim), transparent); }
+    .footcross {
+      width: 26px;
+      height: 40px;
+      color: var(--red);
+      filter: drop-shadow(0 0 9px rgba(200, 34, 28, 0.65));
+      flex: 0 0 auto;
     }
 
-    .link:nth-child(odd) {
-      transform: rotate(-0.55deg);
-    }
-
-    .link:nth-child(even) {
-      transform: rotate(0.55deg);
-    }
-
-    .link:nth-child(2) {
-      animation-delay: 0.3s;
-    }
-
-    .link:nth-child(3) {
-      animation-delay: 0.7s;
-    }
-
-    .link:nth-child(4) {
-      animation-delay: 0.5s;
-    }
-
-    .link:nth-child(5) {
-      animation-delay: 0.9s;
-    }
-
-    .link:nth-child(6) {
-      animation-delay: 0.2s;
-    }
-
-    .link:nth-child(7) {
-      animation-delay: 0.8s;
-    }
-
-    .link::after {
-      content: "";
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
-      background:
-        radial-gradient(260px 110px at var(--mx, 50%) var(--my, 50%), rgba(255, 101, 101, 0.14), transparent 70%),
-        linear-gradient(90deg, rgba(255, 40, 40, 0.04), transparent 30%);
-      opacity: 0;
-      transition: opacity 0.2s ease;
-    }
-
-    .link:nth-child(3n)::before,
-    .link:nth-child(3n + 2)::before {
-      width: 6px;
-      filter: blur(0.4px);
-    }
-
-    .link:hover {
-      transform: translateY(-4px) scale(1.02) rotate(-0.4deg);
-      background: var(--card-hover);
-      border-color: rgba(255, 91, 91, 0.28);
-      box-shadow: 0 18px 34px rgba(0, 0, 0, 0.36);
-    }
-
-    .link:hover::after,
-    .link:focus-visible::after {
-      opacity: 1;
-    }
-
-    .link:focus-visible {
-      outline: none;
-      border-color: rgba(255, 91, 91, 0.34);
-      box-shadow: 0 0 0 3px rgba(255, 91, 91, 0.12), 0 18px 34px rgba(0, 0, 0, 0.36);
-    }
-
-    .text {
-      position: relative;
-      z-index: 1;
-      flex: 1;
-      display: grid;
-      justify-items: center;
-      text-align: center;
-    }
-
-    .arrow {
-      position: absolute;
-      top: 50%;
-      right: 20px;
-      z-index: 1;
-    }
-
-    .title {
-      position: relative;
-      font: 700 18px/1.1 var(--font-display);
-      letter-spacing: -0.02em;
-      text-transform: uppercase;
-      color: #fff2f2;
-    }
-
-    .title::before {
-      content: attr(data-text);
-      position: absolute;
-      inset: 0;
-      color: rgba(255, 78, 78, 0.34);
-      transform: translate(1px, -1px);
-      opacity: 0;
-      pointer-events: none;
-    }
-
-    .desc {
-      margin-top: 5px;
-      font-size: 12px;
-      color: var(--muted);
-      transition: transform 0.2s ease, color 0.2s ease, letter-spacing 0.2s ease;
-    }
-
-    .arrow {
-      color: #ff8e8e;
-      font: 600 18px/1 var(--font-code);
-      opacity: 0.9;
-      transform: translateY(-50%) translateX(0);
-      transition: transform 0.2s ease, opacity 0.2s ease;
-    }
-
-    .link:hover .arrow,
-    .link:focus-visible .arrow {
-      transform: translateY(-50%) translateX(6px) skewX(-8deg);
-      opacity: 1;
-    }
-
-    .link:hover .title::before,
-    .link:focus-visible .title::before {
-      opacity: 1;
-      animation: microGlitch 0.25s steps(2, end) 2;
-    }
-
-    .link:hover .desc,
-    .link:focus-visible .desc {
-      color: #f2bbbb;
-      transform: translateX(3px);
-      letter-spacing: 0.04em;
-    }
-
-    .intro {
-      position: fixed;
-      inset: 0;
-      z-index: 10;
-      display: grid;
-      place-items: center;
-      padding: 24px;
-      background:
-        radial-gradient(circle at 50% 30%, rgba(255, 60, 60, 0.12), transparent 26%),
-        radial-gradient(circle at 50% 78%, rgba(120, 0, 12, 0.22), transparent 34%),
-        rgba(7, 0, 1, 0.9);
-      backdrop-filter: blur(14px);
-      transition: opacity 0.65s ease, visibility 0.65s ease;
-      overflow: hidden;
-    }
-
-    .intro::before,
-    .intro::after {
-      content: "";
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
-    }
-
-    .intro::before {
-      background:
-        repeating-linear-gradient(
-          180deg,
-          rgba(255, 255, 255, 0.018) 0 2px,
-          transparent 2px 8px
-        ),
-        linear-gradient(90deg, transparent 0 48%, rgba(255, 110, 110, 0.045) 48% 52%, transparent 52% 100%);
-      animation: introScan 2.8s linear infinite;
-    }
-
-    .intro::after {
-      background: radial-gradient(circle at 50% 50%, transparent 0 34%, rgba(0, 0, 0, 0.42) 76%, rgba(0, 0, 0, 0.86) 100%);
-    }
-
-    .intro.is-leaving {
-      opacity: 0;
-      visibility: hidden;
-      pointer-events: none;
-    }
-
-    .intro__panel {
-      position: relative;
-      z-index: 1;
-      width: min(620px, 100%);
-      padding: 30px 28px;
-      border: 1px solid rgba(255, 92, 92, 0.18);
-      border-radius: 26px;
-      background:
-        linear-gradient(135deg, rgba(255, 75, 75, 0.08), transparent 34%),
-        linear-gradient(180deg, rgba(30, 2, 5, 0.92), rgba(11, 1, 2, 0.88));
-      box-shadow:
-        0 34px 90px rgba(0, 0, 0, 0.62),
-        inset 0 1px 0 rgba(255, 255, 255, 0.04);
-      animation: introPanelJolt 3.6s steps(2, end) infinite;
-    }
-
-    .intro__title {
-      margin: 0;
-      text-align: center;
-      font: 700 clamp(42px, 9vw, 92px)/0.94 var(--font-display);
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: #fff1f1;
-      text-shadow:
-        0 0 28px rgba(255, 64, 64, 0.22),
-        0 0 60px rgba(122, 9, 18, 0.24);
-      animation: introTitlePulse 1.8s ease-in-out infinite, titleFlicker 3.8s steps(1, end) infinite;
-    }
-
-    .intro__title span {
-      display: inline-block;
-      animation: glyphShift 1.4s steps(2, end) infinite;
-    }
-
-    .intro__title span:nth-child(2) {
-      animation-delay: 0.1s;
-    }
-
-    .intro__title span:nth-child(3) {
-      animation-delay: 0.18s;
-    }
-
-    .intro__title span:nth-child(4) {
-      animation-delay: 0.07s;
-    }
-
-    .intro__title span:nth-child(5) {
-      animation-delay: 0.14s;
-    }
-
-    @keyframes fadeIn {
-      to {
-        opacity: 1;
-      }
-    }
-
-    @keyframes clinicFlash {
-      0%, 9%, 11%, 48%, 50%, 100% {
-        opacity: 0.28;
-      }
-
-      10%, 49% {
-        opacity: 0.5;
-      }
-    }
-
+    @keyframes fade { to { opacity: 1; } }
     @keyframes roomPulse {
-      0%, 100% {
-        transform: scale(1);
-        filter: brightness(0.92) saturate(1);
-      }
-
-      50% {
-        transform: scale(1.03);
-        filter: brightness(1.08) saturate(1.14);
-      }
+      0%, 100% { opacity: 0; }
+      50% { opacity: 1; }
     }
-
-    @keyframes scanShift {
-      0% {
-        transform: translate3d(0, 0, 0);
-      }
-
-      50% {
-        transform: translate3d(0, 8px, 0);
-      }
-
-      100% {
-        transform: translate3d(0, 0, 0);
-      }
+    @keyframes leakBeat {
+      0%, 100% { opacity: 0.78; }
+      50% { opacity: 1; }
     }
-
-    @keyframes bgFlicker {
-      0%, 14%, 16%, 64%, 66%, 100% {
-        opacity: 0.14;
-      }
-
-      15%, 65% {
-        opacity: 0.2;
-      }
-    }
-
-    @keyframes sirenBeat {
-      0%, 100% {
-        opacity: 0.46;
-      }
-
-      50% {
-        opacity: 0.66;
-      }
-    }
-
-    @keyframes shellShake {
-      0%, 100% {
-        transform: perspective(900px) rotateX(var(--rx)) rotateY(var(--ry)) translate3d(0, 0, 0);
-      }
-
-      8% {
-        transform: perspective(900px) rotateX(calc(var(--rx) + 0.8deg)) rotateY(calc(var(--ry) - 0.7deg)) translate3d(-1px, 0, 0);
-      }
-
-      9% {
-        transform: perspective(900px) rotateX(calc(var(--rx) - 0.4deg)) rotateY(calc(var(--ry) + 0.4deg)) translate3d(1px, 0, 0);
-      }
-    }
-
-    @keyframes frameTremor {
-      0%, 100% {
-        transform: translate3d(0, 0, 0);
-      }
-
-      18% {
-        transform: translate3d(-1px, 0, 0);
-      }
-
-      19% {
-        transform: translate3d(1px, 0, 0);
-      }
-
-      61% {
-        transform: translate3d(0, -1px, 0);
-      }
-
-      62% {
-        transform: translate3d(0, 1px, 0);
-      }
-    }
-
-    @keyframes textBlink {
-      0%, 48%, 50%, 100% {
-        opacity: 0.92;
-      }
-
-      49% {
-        opacity: 0.36;
-      }
-    }
-
-    @keyframes titleFlicker {
-      0%, 29%, 31%, 72%, 74%, 100% {
-        opacity: 1;
-      }
-
-      30%, 73% {
-        opacity: 0.82;
-      }
-    }
-
-    @keyframes glitchSliceA {
-      0%, 100% {
-        transform: translate(-2px, 0);
-      }
-
-      20% {
-        transform: translate(2px, -1px);
-      }
-
-      21% {
-        transform: translate(-3px, 1px);
-      }
-    }
-
-    @keyframes glitchSliceB {
-      0%, 100% {
-        transform: translate(2px, 0);
-      }
-
-      42% {
-        transform: translate(-1px, 1px);
-      }
-
-      43% {
-        transform: translate(3px, -1px);
-      }
-    }
-
-    @keyframes microGlitch {
-      0% {
-        transform: translate(1px, -1px);
-      }
-
-      50% {
-        transform: translate(-2px, 1px);
-      }
-
-      100% {
-        transform: translate(2px, 0);
-      }
-    }
-
-    @keyframes cardBuzz {
-      0%, 100% {
-        filter: brightness(1);
-        box-shadow: 0 14px 26px rgba(0, 0, 0, 0.28);
-      }
-
-      13% {
-        filter: brightness(1.04);
-        box-shadow: 0 16px 28px rgba(0, 0, 0, 0.32);
-      }
-
-      14% {
-        filter: brightness(0.98);
-        box-shadow: 0 12px 22px rgba(0, 0, 0, 0.24);
-      }
-
-      15% {
-        filter: brightness(1);
-        box-shadow: 0 14px 26px rgba(0, 0, 0, 0.28);
-      }
-    }
-
-    @keyframes introScan {
-      0% {
-        transform: translateY(-10px);
-      }
-
-      100% {
-        transform: translateY(10px);
-      }
-    }
-
-    @keyframes introPanelJolt {
-      0%, 100% {
-        transform: translate3d(0, 0, 0);
-      }
-
-      11% {
-        transform: translate3d(-1px, 0, 0);
-      }
-
-      12% {
-        transform: translate3d(2px, 0, 0);
-      }
-
-      13% {
-        transform: translate3d(0, 0, 0);
-      }
-    }
-
-    @keyframes introTitlePulse {
-      0%, 100% {
-        transform: scale(1);
-      }
-
-      50% {
-        transform: scale(1.02);
-      }
-    }
-
-    @keyframes glyphShift {
-      0%, 100% {
-        transform: translate3d(0, 0, 0);
-      }
-
-      48% {
-        transform: translate3d(0, 0, 0);
-      }
-
-      49% {
-        transform: translate3d(-1px, -1px, 0);
-      }
-
-      50% {
-        transform: translate3d(1px, 1px, 0);
-      }
+    @keyframes trackSweep {
+      0%   { transform: translateY(0); }
+      100% { transform: translateY(140vh); }
     }
 
     @media (prefers-reduced-motion: reduce) {
-      *,
-      *::before,
-      *::after {
-        animation: none !important;
-        transition: none !important;
-      }
-
-      body.intro-active .wrap,
-      body.intro-done .wrap {
-        opacity: 1;
-        transform: none;
-        filter: none;
-      }
+      *, *::before, *::after { animation: none !important; transition: none !important; }
+      .scan, .tracking { display: none; }
+      .pfp:hover, .pfp:focus-visible, .glitching .frame, .link:hover .ic svg { filter: none; }
     }
 
+    @media (max-width: 860px) {
+      .vrail { display: none; }
+    }
     @media (max-width: 600px) {
-      :root {
-        --w: 96vw;
-        --w-links: 96vw;
-      }
-
-      body {
-        place-items: start center;
-      }
-
-      .wrap {
-        padding: 18px 10px 34px;
-        transform: none !important;
-      }
-
-      .profile {
-        padding: 18px;
-        gap: 14px;
-        align-items: flex-start;
-      }
-
-      .pfp {
-        width: 70px;
-        height: 70px;
-      }
-
-      .name {
-        font-size: clamp(24px, 8vw, 32px);
-      }
-
-      .bio {
-        max-width: none;
-      }
-
-      .link {
-        min-height: 58px;
-        padding: 16px 18px;
-        transform: none;
-      }
-
-      .intro__panel {
-        padding: 24px 20px;
-      }
-
-      .intro__title {
-        letter-spacing: 0.08em;
-      }
-
-      .warp {
-        opacity: 0.3;
-      }
-
-      .bg::after {
-        background-position: center;
-      }
+      :root { --w: 96vw; --w-links: 94vw; }
+      body { place-items: start center; }
+      .stage { padding: 20px 8px 34px; }
+      .frame { padding: 18px 16px; min-height: 0; display: flex; flex-direction: column; }
+      .pfp { position: static; transform: none; width: 64px; height: 64px; margin-bottom: 12px; }
+      .pfp:hover { transform: scale(1.03); }
+      .brand { font-size: clamp(32px, 12vw, 48px); }
+      .link { grid-template-columns: 54px 1fr 54px; min-height: 58px; }
+      .t { font-size: 16px; }
     }
   </style>
 </head>
-<body class="intro-active">
-  <div class="intro" id="intro" role="dialog" aria-label="Intro">
-    <div class="intro__panel">
-      <div class="intro__title" aria-label="DREIJI.PL">
-        <span>D</span><span>R</span><span>E</span><span>I</span><span>J</span><span>I</span><span>.</span><span>P</span><span>L</span>
-      </div>
-    </div>
-  </div>
+<body>
+  <!-- definicje filtrów SVG : deformacja sygnału (feTurbulence + feDisplacementMap) -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+    <defs>
+      <filter id="warp" x="-10%" y="-10%" width="120%" height="120%">
+        <feTurbulence type="fractalNoise" baseFrequency="0.012 0.18" numOctaves="1" seed="7" result="n" />
+        <feDisplacementMap in="SourceGraphic" in2="n" scale="9" xChannelSelector="R" yChannelSelector="G" />
+      </filter>
+      <filter id="warp-soft" x="-10%" y="-10%" width="120%" height="120%">
+        <feTurbulence type="fractalNoise" baseFrequency="0.02 0.3" numOctaves="1" seed="3" result="n" />
+        <feDisplacementMap in="SourceGraphic" in2="n" scale="3.5" xChannelSelector="R" yChannelSelector="G" />
+      </filter>
+      <!-- narożnik maswerkowy : rysowany raz, używany osiem razy -->
+      <symbol id="corner" viewBox="0 0 34 34">
+        <g fill="none" stroke="currentColor">
+          <path d="M2 34 V12 Q2 2 12 2 H34" stroke-width="1.4" />
+          <path d="M9 34 V16 Q9 9 16 9 H34" stroke-width="0.7" stroke-opacity="0.7" />
+          <path d="M2 23 Q4 12 12 5.5" stroke-width="0.6" stroke-opacity="0.55" />
+        </g>
+        <g fill="currentColor">
+          <path d="M5.5 5.5 L14 9.5 L9.5 14 Z" opacity="0.9" />
+          <path d="M19 5.5 21 2 23 5.5 21 9Z" opacity="0.8" />
+          <path d="M5.5 19 2 21 5.5 23 9 21Z" opacity="0.8" />
+          <circle cx="27" cy="5.5" r="1.3" opacity="0.7" />
+          <circle cx="5.5" cy="27" r="1.3" opacity="0.7" />
+        </g>
+      </symbol>
+    </defs>
+  </svg>
+
   <div class="bg" aria-hidden="true"></div>
-  <div class="warp" aria-hidden="true"></div>
-  <main class="wrap">
-    <header class="profile">
+  <div class="pulse" aria-hidden="true"></div>
+  <div class="leak" aria-hidden="true"></div>
+  <div class="grain" aria-hidden="true"></div>
+  <div class="scan" aria-hidden="true"></div>
+  <div class="tracking" aria-hidden="true"></div>
+
+  <!-- rozeta katedralna : czysty maswerk, stroke na currentColor -->
+  <svg class="rose" viewBox="0 0 400 400" fill="none" stroke="currentColor" aria-hidden="true">
+    <circle cx="200" cy="200" r="196" stroke-width="0.8" />
+    <circle cx="200" cy="200" r="188" stroke-width="0.4" />
+    <circle cx="200" cy="200" r="132" stroke-width="0.6" />
+    <circle cx="200" cy="200" r="58"  stroke-width="0.6" />
+    <circle cx="200" cy="200" r="24"  stroke-width="0.8" />
+    <!-- 12 promieni + ostrołuki między pierścieniami -->
+    <g stroke-width="0.5">
+      <path d="M200 12 V68 M200 332 V388 M12 200 H68 M332 200 H388
+               M67 67 L107 107 M333 67 L293 107 M67 333 L107 293 M333 333 L293 293
+               M106 38 L134 86 M294 38 L266 86 M106 362 L134 314 M294 362 L266 314
+               M38 106 L86 134 M38 294 L86 266 M362 106 L314 134 M362 294 L314 266" />
+    </g>
+    <g stroke-width="0.55">
+      <path d="M200 68 Q224 100 200 132 Q176 100 200 68 Z
+               M200 332 Q224 300 200 268 Q176 300 200 332 Z
+               M68 200 Q100 224 132 200 Q100 176 68 200 Z
+               M332 200 Q300 224 268 200 Q300 176 332 200 Z
+               M107 107 Q145 118 153 153 Q118 145 107 107 Z
+               M293 107 Q255 118 247 153 Q282 145 293 107 Z
+               M107 293 Q145 282 153 247 Q118 255 107 293 Z
+               M293 293 Q255 282 247 247 Q282 255 293 293 Z" />
+    </g>
+    <g stroke-width="0.4">
+      <circle cx="200" cy="100" r="9" /><circle cx="200" cy="300" r="9" />
+      <circle cx="100" cy="200" r="9" /><circle cx="300" cy="200" r="9" />
+      <circle cx="130" cy="130" r="7" /><circle cx="270" cy="130" r="7" />
+      <circle cx="130" cy="270" r="7" /><circle cx="270" cy="270" r="7" />
+    </g>
+  </svg>
+
+  <!-- sygnatury : potrójny krzyż (prawy róg) i krzyż pęknięty (lewy) -->
+  <svg class="sigil sigil--tr" viewBox="0 0 64 30" aria-hidden="true">
+    <g fill="currentColor">
+      <path d="M10 2 11 5 11 9 14.5 9 15.5 11 11 12 11 24 12.8 26.5 10 29 7.2 26.5 9 24 9 12 4.5 11 5.5 9 9 9 9 5Z" />
+      <path d="M32 0 33.2 3.6 33.2 8 37.5 8 38.7 10.4 33.2 11.6 33.2 25 35.2 27.8 32 30 28.8 27.8 30.8 25 30.8 11.6 25.3 10.4 26.5 8 30.8 8 30.8 3.6Z" />
+      <path d="M54 2 55 5 55 9 58.5 9 59.5 11 55 12 55 24 56.8 26.5 54 29 51.2 26.5 53 24 53 12 48.5 11 49.5 9 53 9 53 5Z" />
+    </g>
+  </svg>
+  <svg class="sigil sigil--tl" viewBox="0 0 30 30" aria-hidden="true">
+    <g fill="currentColor">
+      <path d="M15 1 16.2 4.6 16.2 9 20.5 9 21.7 11.4 16.2 12.6 16.2 19 14 19 13.8 12.6 8.3 11.4 9.5 9 13.8 9 13.8 4.6Z" />
+      <!-- dolne ramię przesunięte — krzyż z uszkodzonym sygnałem -->
+      <path d="M16.6 21 18.6 23.8 15.4 26.4 12.6 23.8 14.4 21Z" transform="translate(1.4 0)" />
+      <rect x="13.4" y="19.6" width="3" height="0.9" transform="translate(-1.2 0)" />
+    </g>
+  </svg>
+
+  <div class="vrail vrail--left" aria-hidden="true">
+    <span class="plus top">+</span>
+    <span class="vline"></span>
+    <span class="vtext">SŁOWA. MUZYKA. NOC.</span>
+    <span class="plus bot">+</span>
+  </div>
+  <div class="vrail vrail--right" aria-hidden="true">
+    <span class="plus top">+</span>
+    <span class="vline"></span>
+    <span class="vtext">CREATIO EX TENEBRIS</span>
+    <span class="plus bot">+</span>
+  </div>
+
+  <main class="stage">
+    <svg class="topcross" viewBox="0 0 24 34" aria-hidden="true">
+      <path fill="currentColor" d="M12 0.5 13.5 3.5 13.5 8 18.5 8 19.8 10 13.5 11.6 13.5 26 15.8 29 12 32.5 8.2 29 10.5 26 10.5 11.6 4.2 10 5.5 8 10.5 8 10.5 3.5Z"/>
+    </svg>
+
+    <header class="frame brk">
+      <svg class="corn corn--tl" aria-hidden="true"><use href="#corner" /></svg>
+      <svg class="corn corn--tr" aria-hidden="true"><use href="#corner" /></svg>
+      <svg class="corn corn--bl" aria-hidden="true"><use href="#corner" /></svg>
+      <svg class="corn corn--br" aria-hidden="true"><use href="#corner" /></svg>
       <img
         class="pfp"
         src="avatar.png"
-        alt="avatar"
+        alt="dreiji"
+        width="92"
+        height="92"
+        decoding="async"
+        fetchpriority="high"
         tabindex="0"
         onclick="location.href='/vault-r3d-only-9d8f6a/'"
         onkeydown="if(event.key==='Enter') location.href='/vault-r3d-only-9d8f6a/'"
       />
-      <div class="meta">
-        <h1 class="name" data-text="dreiji">dreiji</h1>
-        <p class="bio">pisze za duzo i spie za malo</p>
+      <div class="htext">
+        <h1 class="brand" data-text="DREIJI">DREIJI</h1>
+        <!-- ornament : + ——— ✛ ——— + , z pęknięciem w lewej linii -->
+        <svg class="rule-svg" viewBox="0 0 240 18" aria-hidden="true">
+          <g stroke="currentColor" fill="none">
+            <path d="M14 9 H74" stroke-opacity="0.55" stroke-width="1" />
+            <path d="M74 9 L80 6 L85 11 L89 9" stroke-opacity="0.85" stroke-width="1" />
+            <path d="M89 9 H100" stroke-opacity="0.55" stroke-width="1" />
+            <path d="M140 9 H226" stroke-opacity="0.55" stroke-width="1" />
+          </g>
+          <g fill="currentColor">
+            <!-- boczne krzyżyki -->
+            <path d="M7 4 8 7 11 8 8 9 7 12 6 9 3 8 6 7Z" />
+            <path d="M233 4 234 7 237 8 234 9 233 12 232 9 229 8 232 7Z" />
+            <!-- centralny krzyż pattée -->
+            <path class="shard" d="M120 1 L122.4 6.6 L128 9 L122.4 11.4 L120 17 L117.6 11.4 L112 9 L117.6 6.6 Z" />
+            <path d="M106 9 L110 6.8 L110 11.2Z" opacity="0.85" />
+            <path d="M134 9 L130 6.8 L130 11.2Z" opacity="0.85" />
+            <circle cx="103" cy="9" r="1.2" opacity="0.7" />
+            <circle cx="137" cy="9" r="1.2" opacity="0.7" />
+          </g>
+        </svg>
+        <p class="tagline">pisze za dużo i śpię za mało</p>
       </div>
     </header>
 
-    <section class="links" id="links">
-      <a class="link" href="https://www.instagram.com/dreiji_/" target="_blank" rel="noreferrer">
-        <div class="text">
-          <div class="title" data-text="Instagram">Instagram</div>
-          <div class="desc">zdjecia</div>
-        </div>
-        <div class="arrow" aria-hidden="true">-&gt;</div>
+    <section class="links">
+      <a class="link brk" href="https://www.instagram.com/dreiji_/" target="_blank" rel="noreferrer">
+        <span class="ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M7.0301.084c-1.2768.0602-2.1487.264-2.911.5634-.7888.3075-1.4575.72-2.1228 1.3877-.6652.6677-1.075 1.3368-1.3802 2.127-.2954.7638-.4956 1.6365-.552 2.914-.0564 1.2775-.0689 1.6882-.0626 4.947.0062 3.2586.0206 3.6671.0825 4.9473.061 1.2765.264 2.1482.5635 2.9107.308.7889.72 1.4573 1.388 2.1228.6679.6655 1.3365 1.0743 2.1285 1.38.7632.295 1.6361.4961 2.9134.552 1.2773.056 1.6884.069 4.9462.0627 3.2578-.0062 3.668-.0207 4.9478-.0814 1.28-.0607 2.147-.2652 2.9098-.5633.7889-.3086 1.4578-.72 2.1228-1.3881.665-.6682 1.0745-1.3378 1.3795-2.1284.2957-.7632.4966-1.636.552-2.9124.056-1.2809.0692-1.6898.063-4.948-.0063-3.2583-.021-3.6668-.0817-4.9465-.0607-1.2797-.264-2.1487-.5633-2.9117-.3084-.7889-.72-1.4568-1.3876-2.1228C21.2982 1.33 20.628.9208 19.8378.6165 19.074.321 18.2017.1197 16.9244.0645 15.6471.0093 15.236-.005 11.977.0014 8.718.0076 8.31.0215 7.0301.0839m.1402 21.6932c-1.17-.0509-1.8053-.2453-2.2287-.408-.5606-.216-.96-.4771-1.3819-.895-.422-.4178-.6811-.8186-.9-1.378-.1644-.4234-.3624-1.058-.4171-2.228-.0595-1.2645-.072-1.6442-.079-4.848-.007-3.2037.0053-3.583.0607-4.848.05-1.169.2456-1.805.408-2.2282.216-.5613.4762-.96.895-1.3816.4188-.4217.8184-.6814 1.3783-.9003.423-.1651 1.0575-.3614 2.227-.4171 1.2655-.06 1.6447-.072 4.848-.079 3.2033-.007 3.5835.005 4.8495.0608 1.169.0508 1.8053.2445 2.228.408.5608.216.96.4754 1.3816.895.4217.4194.6816.8176.9005 1.3787.1653.4217.3617 1.056.4169 2.2263.0602 1.2655.0739 1.645.0796 4.848.0058 3.203-.0055 3.5834-.061 4.848-.051 1.17-.245 1.8055-.408 2.2294-.216.5604-.4763.96-.8954 1.3814-.419.4215-.8181.6811-1.3783.9-.4224.1649-1.0577.3617-2.2262.4174-1.2656.0595-1.6448.072-4.8493.079-3.2045.007-3.5825-.006-4.848-.0608M16.953 5.5864A1.44 1.44 0 1 0 18.39 4.144a1.44 1.44 0 0 0-1.437 1.4424M5.8385 12.012c.0067 3.4032 2.7706 6.1557 6.173 6.1493 3.4026-.0065 6.157-2.7701 6.1506-6.1733-.0065-3.4032-2.771-6.1565-6.174-6.1498-3.403.0067-6.156 2.771-6.1496 6.1738M8 12.0077a4 4 0 1 1 4.008 3.9921A3.9996 3.9996 0 0 1 8 12.0077"/></svg></span>
+        <span class="label"><span class="t">Instagram</span><span class="s">zdjęcia</span></span>
+        <span class="go"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12h14M13 6l6 6-6 6"/></svg></span>
       </a>
 
-      <a class="link" href="https://www.youtube.com/@dreijiwtf" target="_blank" rel="noreferrer">
-        <div class="text">
-          <div class="title" data-text="YouTube">YouTube</div>
-          <div class="desc"></div>
-        </div>
-        <div class="arrow" aria-hidden="true">-&gt;</div>
+      <a class="link brk" href="https://www.youtube.com/@dreijiwtf" target="_blank" rel="noreferrer">
+        <span class="ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg></span>
+        <span class="label"><span class="t">YouTube</span><span class="s"></span></span>
+        <span class="go"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12h14M13 6l6 6-6 6"/></svg></span>
       </a>
 
-      <a class="link" href="https://open.spotify.com/user/q4qar66nrdz396d67bpfbv952" target="_blank" rel="noreferrer">
-        <div class="text">
-          <div class="title" data-text="Spotify">Spotify</div>
-          <div class="desc">muzyka</div>
-        </div>
-        <div class="arrow" aria-hidden="true">-&gt;</div>
+      <a class="link brk" href="https://open.spotify.com/user/q4qar66nrdz396d67bpfbv952" target="_blank" rel="noreferrer">
+        <span class="ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg></span>
+        <span class="label"><span class="t">Spotify</span><span class="s">muzyka</span></span>
+        <span class="go"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12h14M13 6l6 6-6 6"/></svg></span>
       </a>
 
-      <a class="link" href="https://discord.com/users/278065747199131650" target="_blank" rel="noreferrer">
-        <div class="text">
-          <div class="title" data-text="Discord">Discord</div>
-          <div class="desc">kontakt</div>
-        </div>
-        <div class="arrow" aria-hidden="true">-&gt;</div>
+      <a class="link brk" href="https://discord.com/users/278065747199131650" target="_blank" rel="noreferrer">
+        <span class="ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M20.317 4.3698a19.7913 19.7913 0 00-4.8851-1.5152.0741.0741 0 00-.0785.0371c-.211.3753-.4447.8648-.6083 1.2495-1.8447-.2762-3.68-.2762-5.4868 0-.1636-.3933-.4058-.8742-.6177-1.2495a.077.077 0 00-.0785-.037 19.7363 19.7363 0 00-4.8852 1.515.0699.0699 0 00-.0321.0277C.5334 9.0458-.319 13.5799.0992 18.0578a.0824.0824 0 00.0312.0561c2.0528 1.5076 4.0413 2.4228 5.9929 3.0294a.0777.0777 0 00.0842-.0276c.4616-.6304.8731-1.2952 1.226-1.9942a.076.076 0 00-.0416-.1057c-.6528-.2476-1.2743-.5495-1.8722-.8923a.077.077 0 01-.0076-.1277c.1258-.0943.2517-.1923.3718-.2914a.0743.0743 0 01.0776-.0105c3.9278 1.7933 8.18 1.7933 12.0614 0a.0739.0739 0 01.0785.0095c.1202.099.246.1981.3728.2924a.077.077 0 01-.0066.1276 12.2986 12.2986 0 01-1.873.8914.0766.0766 0 00-.0407.1067c.3604.698.7719 1.3628 1.225 1.9932a.076.076 0 00.0842.0286c1.961-.6067 3.9495-1.5219 6.0023-3.0294a.077.077 0 00.0313-.0552c.5004-5.177-.8382-9.6739-3.5485-13.6604a.061.061 0 00-.0312-.0286zM8.02 15.3312c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9555-2.4189 2.157-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.9555 2.4189-2.1569 2.4189zm7.9748 0c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9554-2.4189 2.1569-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.946 2.4189-2.1568 2.4189Z"/></svg></span>
+        <span class="label"><span class="t">Discord</span><span class="s">kontakt</span></span>
+        <span class="go"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12h14M13 6l6 6-6 6"/></svg></span>
       </a>
 
-      <a class="link" href="https://twitch.tv/dreiji" target="_blank" rel="noreferrer">
-        <div class="text">
-          <div class="title" data-text="Twitch">Twitch</div>
-          <div class="desc">live czasem</div>
-        </div>
-        <div class="arrow" aria-hidden="true">-&gt;</div>
+      <a class="link brk" href="https://twitch.tv/dreiji" target="_blank" rel="noreferrer">
+        <span class="ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M11.571 4.714h1.715v5.143H11.57zm4.715 0H18v5.143h-1.714zM6 0L1.714 4.286v15.428h5.143V24l4.286-4.286h3.428L22.286 12V0zm14.571 11.143l-3.428 3.428h-3.429l-3 3v-3H6.857V1.714h13.714Z"/></svg></span>
+        <span class="label"><span class="t">Twitch</span><span class="s">live czasem</span></span>
+        <span class="go"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12h14M13 6l6 6-6 6"/></svg></span>
       </a>
 
-      <a class="link" href="https://mail.google.com/mail/?view=cm&fs=1&to=kontakt@dreiji.pl" target="_blank" rel="noreferrer">
-        <div class="text">
-          <div class="title" data-text="Mail">Mail</div>
-          <div class="desc"></div>
-        </div>
-        <div class="arrow" aria-hidden="true">-&gt;</div>
+      <a class="link brk" href="https://mail.google.com/mail/?view=cm&fs=1&to=kontakt@dreiji.pl" target="_blank" rel="noreferrer">
+        <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="5" width="19" height="14" rx="2"/><path d="M3 6.5l9 6 9-6"/></svg></span>
+        <span class="label"><span class="t">Mail</span><span class="s"></span></span>
+        <span class="go"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12h14M13 6l6 6-6 6"/></svg></span>
       </a>
 
-      <a class="link" href="https://x.com/Dreiji_" target="_blank" rel="noreferrer">
-        <div class="text">
-          <div class="title" data-text="X">X</div>
-          <div class="desc"></div>
-        </div>
-        <div class="arrow" aria-hidden="true">-&gt;</div>
+      <a class="link brk" href="https://x.com/Dreiji_" target="_blank" rel="noreferrer">
+        <span class="ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M14.234 10.162 22.977 0h-2.072l-7.591 8.824L7.251 0H.258l9.168 13.343L.258 24H2.33l8.016-9.318L16.749 24h6.993zm-2.837 3.299-.929-1.329L3.076 1.56h3.182l5.965 8.532.929 1.329 7.754 11.09h-3.182z"/></svg></span>
+        <span class="label"><span class="t">X</span><span class="s"></span></span>
+        <span class="go"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12h14M13 6l6 6-6 6"/></svg></span>
       </a>
     </section>
+
+    <div class="foot" aria-hidden="true">
+      <span class="fline l"></span>
+      <svg class="footcross" viewBox="0 0 24 40">
+        <path fill="currentColor" d="M12 0.5 13.6 4 13.6 9.5 19.5 9.5 21 12 13.6 14 13.6 31 16.4 34.5 12 39.5 7.6 34.5 10.4 31 10.4 14 3 12 4.5 9.5 10.4 9.5 10.4 4Z"/>
+        <path fill="currentColor" d="M12 18 13.8 21 12 24 10.2 21Z" opacity="0.85"/>
+      </svg>
+      <span class="fline r"></span>
+    </div>
   </main>
 
   <script>
-    const opts = { passive: true };
-    const intro = document.getElementById("intro");
-    const links = document.querySelectorAll(".link");
+    (() => {
+      const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-    links.forEach((el) => {
-      const move = (e) => {
-        const t = e.touches ? e.touches[0] : e;
-        const r = el.getBoundingClientRect();
-        el.style.setProperty("--mx", ((t.clientX - r.left) / r.width) * 100 + "%");
-        el.style.setProperty("--my", ((t.clientY - r.top) / r.height) * 100 + "%");
-      };
-
-      el.addEventListener("mousemove", move, opts);
-      el.addEventListener("touchstart", move, opts);
-      el.addEventListener("touchmove", move, opts);
-      el.addEventListener("mouseenter", () => document.body.classList.add("is-hovering"), opts);
-      el.addEventListener("mouseleave", () => document.body.classList.remove("is-hovering"), opts);
-
-      const clear = () => {
-        el.style.removeProperty("--mx");
-        el.style.removeProperty("--my");
-      };
-
-      el.addEventListener("mouseleave", clear, opts);
-      el.addEventListener("touchend", clear, opts);
-      el.addEventListener("touchcancel", clear, opts);
-    });
-
-    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-    let introClosed = false;
-
-    const dismissIntro = () => {
-      if (!intro || introClosed) {
-        return;
-      }
-
-      introClosed = true;
-      intro.classList.add("is-leaving");
-      document.body.classList.remove("intro-active");
-      document.body.classList.add("intro-done");
-
-      window.setTimeout(() => {
-        intro.remove();
-      }, 700);
-    };
-
-    if (intro) {
-      const introDelay = reduceMotion ? 900 : 2800;
-      const autoIntro = window.setTimeout(dismissIntro, introDelay);
-
-      intro.addEventListener("click", (event) => {
-        if (event.target === intro) {
-          window.clearTimeout(autoIntro);
-          dismissIntro();
-        }
+      /* reflektor pod kursorem — mousemove throttlowany do rAF,
+         żeby nie pisać CSS-varów częściej niż klatka */
+      const opts = { passive: true };
+      document.querySelectorAll(".link").forEach((el) => {
+        let raf = 0, ev = null;
+        el.addEventListener("mousemove", (e) => {
+          ev = e;
+          if (raf) return;
+          raf = requestAnimationFrame(() => {
+            raf = 0;
+            const r = el.getBoundingClientRect();
+            el.style.setProperty("--mx", ((ev.clientX - r.left) / r.width) * 100 + "%");
+            el.style.setProperty("--my", ((ev.clientY - r.top) / r.height) * 100 + "%");
+          });
+        }, opts);
       });
 
-      window.addEventListener("keydown", (event) => {
-        if (!introClosed && (event.key === "Enter" || event.key === " " || event.key === "Escape")) {
-          window.clearTimeout(autoIntro);
-          dismissIntro();
+      /* reżyser glitcha — nieregularny zryw co 4–9 s, 280 ms życia.
+         Cisza, kiedy karta jest w tle albo użytkownik nie chce ruchu. */
+      if (reduced) return;
+      const root = document.documentElement;
+      const surge = () => {
+        if (!document.hidden) {
+          root.classList.add("glitching");
+          setTimeout(() => root.classList.remove("glitching"), 280);
         }
-      });
-    }
-
-    if (!reduceMotion) {
-      const triggerChaos = () => {
-        document.body.classList.add("is-hovering");
-        document.body.classList.toggle("chaos", Math.random() > 0.5);
-        window.setTimeout(() => {
-          document.body.classList.remove("chaos");
-          if (!document.querySelector(".link:hover")) {
-            document.body.classList.remove("is-hovering");
-          }
-        }, 120 + Math.random() * 160);
+        setTimeout(surge, 4000 + Math.random() * 5000);
       };
-
-      window.setInterval(() => {
-        if (Math.random() > 0.78) {
-          triggerChaos();
-        }
-      }, 900);
-    }
-
-    if (!reduceMotion) {
-      const intensity = document.body.classList.contains("is-hovering") ? 16 : 7;
-      const wobble = Math.sin(Date.now() * 0.012) * intensity;
-      document.documentElement.style.setProperty("--warp", wobble.toFixed(2) + "px");
-    }
+      setTimeout(surge, 2500);
+    })();
   </script>
 </body>
 </html>
