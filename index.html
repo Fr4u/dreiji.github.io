@@ -36,6 +36,36 @@
     }
 
     * { box-sizing: border-box; }
+    html, body,
+    .stage,
+    .frame,
+    .brand,
+    .tagline,
+    .links,
+    .link,
+    .label,
+    .t,
+    .s {
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+    }
+
+    ::selection {
+      background: transparent;
+      color: inherit;
+    }
+
+    ::-moz-selection {
+      background: transparent;
+      color: inherit;
+    }
+
+    img, svg {
+      -webkit-user-drag: none;
+      user-drag: none;
+    }
     html, body { min-height: 100%; }
 
     body {
